@@ -18,6 +18,10 @@ A filterable, sortable table of hobby-grade 1/10-scale ready-to-run off-road RC 
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). In short, edit `cars.json`, include a source link, and open a pull request.
 
+## License
+
+The code (`index.html`, `scripts/` and `.github/`) is under the [MIT License](LICENSE). The car data in `cars.json` is under [CC BY 4.0](LICENSE-DATA): you can reuse it if you credit this project.
+
 ## Previewing locally
 
 The page loads `cars.json`, so open it through a local web server rather than by double-clicking it:

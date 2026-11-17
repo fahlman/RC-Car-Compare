@@ -2,6 +2,8 @@
 
 Thanks for helping keep this table accurate! All the data lives in **`cars.json`**. You never need to touch the HTML.
 
+By contributing, you agree that your changes to `cars.json` are licensed under [CC BY 4.0](LICENSE-DATA) and your changes to everything else are licensed under the [MIT License](LICENSE).
+
 ## The easy way (no software needed)
 
 1. Open `cars.json` on GitHub and click the pencil icon (**Edit this file**).

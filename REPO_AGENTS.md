@@ -2,6 +2,14 @@
 
 Project-specific rules for agents. The shared rules are in [AGENTS.md](AGENTS.md).
 
+## How the shared rules apply here
+
+Ryan, 2026-11-17: this is just a website hosted on GitHub, and the shared
+rules can be bent or broken here. Many of them are written for his Mac apps.
+Use judgment rather than the full process. It's fine to commit straight to
+`main` without an issue, branch, worktree, or second-agent review. Every push to
+`main` goes live (see Release), so preview changes before pushing.
+
 ## Purpose
 
 A static web page with a filterable, sortable table of hobby-grade 1/10-scale
@@ -58,6 +66,9 @@ pull requests. Scope and data rules for contributors are in
 
 ## Release
 
-- Pending: no release or deploy process is approved yet. The README describes
-  publishing through GitHub Pages from `main` / `(root)` and then setting
-  `REPO_URL` in `index.html`. Neither has been done yet.
+- GitHub Pages publishes `main` / `(root)` at
+  https://code.fahlsing.com/RC-Car-Compare/, the custom domain of
+  `fahlman.github.io`. Every push to `main` updates the live site within a few
+  minutes. There are no versions or tags.
+- Pending: `REPO_URL` in `index.html` is still empty, so the footer has no
+  "Edit on GitHub" link.

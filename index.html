@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RC Car Spec Compare — 1/10 RTR</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1b1f24; --muted: #5f6b7a; --line: #dde2e8;
+    --accent: #d9480f; --accent-soft: #fff1e8; --yes: #1f7a3d; --no: #a12a2a; --maybe: #8a6100;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#14171b; --panel:#1c2026; --ink:#e8ecf1; --muted:#9aa5b1; --line:#2d333b;
+            --accent:#ff7a3d; --accent-soft:#2b1d15; --yes:#5cc882; --no:#f07a7a; --maybe:#e3b341; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding: 22px 24px 8px; }
+  h1 { margin:0 0 4px; font-size: 22px; letter-spacing:-.01em; }
+  header p { margin:0; color:var(--muted); }
+  main { padding: 12px 24px 40px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; }
+  .filters { display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-end; }
+  .f { display:flex; flex-direction:column; gap:5px; font-size:13px; }
+  .f > span { color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .chips label { display:flex; align-items:center; gap:5px; padding:4px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; user-select:none; }
+  .chips input { accent-color: var(--accent); margin:0; }
+  select, input[type=number], input[type=search] {
+    font: inherit; padding:6px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--ink);
+  }
+  input[type=number] { width: 110px; }
+  input[type=search] { width: 200px; }
+  button { font: inherit; padding:6px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; }
+  button:hover { border-color: var(--accent); }
+  .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 4px 0 10px; }
+  .count { color:var(--muted); margin-right:auto; }
+  .hint { color:var(--muted); font-size:12.5px; }
+
+  .colmenu { position:relative; }
+  .colpanel { display:none; position:absolute; right:0; top:calc(100% + 6px); z-index:20; width:270px; max-height:70vh; overflow:auto;
+              background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:0 10px 30px rgba(0,0,0,.15); padding:8px; }
+  .colpanel.open { display:block; }
+  .colpanel h3 { margin:4px 6px 8px; font-size:13px; color:var(--muted); }
+  .colrow { display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; }
+  .colrow:hover { background:var(--accent-soft); }
+  .colrow.dragging { opacity:.4; }
+  .colrow .grip { cursor:grab; color:var(--muted); }
+  .colrow label { flex:1; display:flex; gap:7px; align-items:center; cursor:pointer; }
+  .colrow button { padding:0 6px; font-size:12px; line-height:20px; }
+
+  .tablewrap { overflow:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); }
+  table { border-collapse:separate; border-spacing:0; width:100%; min-width:900px; }
+  th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; white-space:nowrap; }
+  td.wrap { white-space:normal; min-width:240px; max-width:380px; color:var(--muted); font-size:13.5px; }
+  th { position:sticky; top:0; background:var(--panel); font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
+       cursor:pointer; user-select:none; z-index:2; }
+  th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
+  th .arrow { color:var(--accent); margin-left:4px; }
+  th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
+  tbody tr:hover td { background:var(--accent-soft); }
+  td.num { text-align:right; font-variant-numeric: tabular-nums; }
+  .unk { color:var(--muted); cursor:help; border-bottom:1px dotted var(--muted); }
+  .yes { color:var(--yes); font-weight:600; } .no { color:var(--no); } .opt { color:var(--maybe); }
+  .brand { font-weight:600; }
+  a { color:var(--accent); }
+  .empty { padding:30px; text-align:center; color:var(--muted); }
+  footer { color:var(--muted); font-size:13px; padding: 0 24px 30px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>RC Car Spec Compare</h1>
+  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
+</header>
+<main>
+  <section class="panel">
+    <div class="filters" id="filters">
+      <div class="f"><span>Brand</span><div class="chips" id="f-brand"></div></div>
+      <div class="f"><span>Drive</span>
+        <select id="f-drive"><option value="">Any</option><option>4WD</option><option>2WD</option></select></div>
+      <div class="f"><span>Motor</span>
+        <select id="f-motor"><option value="">Any</option><option>Brushless</option><option>Brushed</option></select></div>
+      <div class="f"><span>Runs on</span>
+        <select id="f-cells"><option value="">Any battery</option><option value="2">2S LiPo</option><option value="3">3S LiPo</option><option value="4">4S LiPo</option><option value="6">6S LiPo</option></select></div>
+      <div class="f"><span>Center diff</span>
+        <select id="f-center">
+          <option value="">Any</option>
+          <option value="yes">Yes (stock)</option>
+          <option value="metal">Yes, metal gears</option>
+          <option value="optional">Optional upgrade</option>
+          <option value="no">No (incl. 2WD)</option>
+        </select></div>
+      <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
+      <div class="f"><span>Type</span><select id="f-type"><option value="">Any</option></select></div>
+      <div class="f"><span>Search</span><input type="search" id="f-q" placeholder="Model, SKU, notes…"></div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <span class="count" id="count"></span>
+    <button id="clear">Clear filters</button>
+    <div class="colmenu">
+      <button id="colbtn" aria-expanded="false">Columns ▾</button>
+      <div class="colpanel" id="colpanel">
+        <h3>Show, hide &amp; drag to reorder</h3>
+        <div id="collist"></div>
+        <div style="padding:8px 6px 4px"><button id="resetcols">Reset layout</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tablewrap"><table><thead><tr id="headrow"></tr></thead><tbody id="body"></tbody></table></div>
+  <p class="hint">“?” means not verified yet. Speeds are the maker's claims and often assume optional gearing. All data comes from the manufacturers' own websites; prices are their regular US list prices on the date shown.</p>
+</main>
+<footer id="footer">
+  Data lives in <code>cars.json</code>. Spot an error or a missing model? <span id="contrib">Open a pull request with a source link.</span>
+</footer>
+
+<script>
+// Set this to your repo URL (e.g. "https://github.com/you/rc-compare") to enable the edit link in the footer.
+const REPO_URL = "";
+
+const COLUMNS = [
+  { key:"brand", label:"Brand", render:c=>`<span class="brand">${esc(c.brand)}</span>` },
+  { key:"model", label:"Model", render:c=>esc(c.model) },
+  { key:"sku", label:"SKU", hidden:true },
+  { key:"scale", label:"Scale" },
+  { key:"type", label:"Type" },
+  { key:"drive", label:"Drive" },
+  { key:"motor", label:"Motor" },
+  { key:"motorDetail", label:"Motor detail", hidden:true },
+  { key:"battery", label:"Battery", sortVal:c=>c.maxCells, render:c=> c.maxCells==null ? unk() : (c.minCells===c.maxCells? `${c.maxCells}S` : `${c.minCells}S–${c.maxCells}S`) + " LiPo" },
+  { key:"topSpeedMph", label:"Top speed", num:true, render:c=> c.topSpeedMph==null ? unk() : `<span title="${esc(c.speedNote||'')}">${(c.speedNote||'').includes('+')?'':'~'}${c.topSpeedMph}${(c.speedNote||'').includes('+')?'+':''} mph</span>` },
+  { key:"centerDiff", label:"Center diff", sortVal:c=>({yes:3,optional:2,no:1,"n/a":0})[c.centerDiff] ?? null, render:c=>({
+      yes:'<span class="yes">Yes</span>', no:'<span class="no">No</span>', optional:'<span class="opt">Optional</span>', "n/a":'<span title="2WD — no center diff">— (2WD)</span>' })[c.centerDiff] || unk() },
+  { key:"centerDiffGears", label:"Center diff gears", render:c=> ["no","optional","n/a"].includes(c.centerDiff) ? "—" : (c.centerDiffGears ? cap(c.centerDiffGears) : unk()) },
+  { key:"frontRearDiffs", label:"Axle diffs", render:c=> c.frontRearDiffs ? esc(c.frontRearDiffs) : unk() },
+  { key:"completion", label:"Build", hidden:true },
+  { key:"priceUsd", label:"Price", num:true, render:c=> c.priceUsd==null ? unk() : "$"+c.priceUsd.toFixed(2) },
+  { key:"notes", label:"Notes", wrap:true, render:c=>esc(c.notes||"") },
+  { key:"source", label:"Source", render:c=> c.source ? `<a href="${esc(c.source)}" target="_blank" rel="noopener">link</a>` : unk() },
+  { key:"verified", label:"Verified", hidden:true },
+];
+const COLMAP = Object.fromEntries(COLUMNS.map(c=>[c.key,c]));
+const STORE_KEY = "rc-compare-layout-v1";
+
+function esc(s){ return String(s??"").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]); }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function unk(){ return '<span class="unk" title="Not verified yet — PRs welcome">?</span>'; }
+
+function defaultLayout(){ return { order: COLUMNS.map(c=>c.key), hidden: COLUMNS.filter(c=>c.hidden).map(c=>c.key), sort: [{key:"priceUsd", dir:1}] }; }
+function loadLayout(){
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && Array.isArray(s.order)) {
+      // keep only known columns, append any new ones added later
+      s.order = s.order.filter(k=>COLMAP[k]).concat(COLUMNS.map(c=>c.key).filter(k=>!s.order.includes(k)));
+      s.hidden = (s.hidden||[]).filter(k=>COLMAP[k]); s.sort = (s.sort||[]).filter(x=>COLMAP[x.key]);
+      return s;
+    }
+  } catch(e) {}
+  return defaultLayout();
+}
+function saveLayout(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(layout)); } catch(e) {} }
+
+let cars = [], layout = loadLayout();
+const $ = id => document.getElementById(id);
+
+function visibleCols(){ return layout.order.filter(k=>!layout.hidden.includes(k)).map(k=>COLMAP[k]); }
+function sortValue(col, c){ return col.sortVal ? col.sortVal(c) : c[col.key]; }
+
+function filtered(){
+  const brands = [...document.querySelectorAll('#f-brand input:checked')].map(i=>i.value);
+  const drive = $('f-drive').value, motor = $('f-motor').value, cells = +$('f-cells').value || 0;
+  const center = $('f-center').value, maxPrice = parseFloat($('f-price').value), type = $('f-type').value;
+  const q = $('f-q').value.trim().toLowerCase();
+  return cars.filter(c=>{
+    if (brands.length && !brands.includes(c.brand)) return false;
+    if (drive && c.drive!==drive) return false;
+    if (motor && c.motor!==motor) return false;
+    if (type && c.type!==type) return false;
+    if (cells && !(c.minCells<=cells && cells<=c.maxCells)) return false;
+    if (center==="metal" && !(c.centerDiff==="yes" && c.centerDiffGears==="metal")) return false;
+    if (center==="no" && !(c.centerDiff==="no" || c.centerDiff==="n/a")) return false;
+    if (center && center!=="metal" && center!=="no" && c.centerDiff!==center) return false;
+    if (!isNaN(maxPrice) && !(c.priceUsd!=null && c.priceUsd<=maxPrice)) return false;
+    if (q && !Object.values(c).join(" ").toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function sorted(rows){
+  const keys = layout.sort;
+  return rows.slice().sort((a,b)=>{
+    for (const {key,dir} of keys){
+      const col = COLMAP[key], va = sortValue(col,a), vb = sortValue(col,b);
+      const na = va==null||va==="", nb = vb==null||vb==="";
+      if (na&&nb) continue; if (na) return 1; if (nb) return -1;   // unknowns always last
+      const r = (typeof va==="number" && typeof vb==="number") ? va-vb : String(va).localeCompare(String(vb), undefined, {numeric:true});
+      if (r) return r*dir;
+    }
+    return 0;
+  });
+}
+
+function renderHead(){
+  const tr = $('headrow'); tr.innerHTML = "";
+  visibleCols().forEach(col=>{
+    const th = document.createElement('th');
+    const si = layout.sort.findIndex(s=>s.key===col.key);
+    th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}` : "");
+    th.draggable = true; th.dataset.key = col.key; th.title = "Click to sort · Shift+click to add a sort · Drag to move";
+    if (col.num) th.style.textAlign = "right";
+    th.addEventListener('click', e=>onSort(col.key, e.shiftKey));
+    th.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', col.key); e.dataTransfer.effectAllowed='move'; });
+    th.addEventListener('dragover', e=>{ e.preventDefault(); th.classList.add('dragover'); });
+    th.addEventListener('dragleave', ()=>th.classList.remove('dragover'));
+    th.addEventListener('drop', e=>{ e.preventDefault(); th.classList.remove('dragover'); moveCol(e.dataTransfer.getData('text/plain'), col.key); });
+    tr.appendChild(th);
+  });
+}
+
+function renderBody(){
+  const rows = sorted(filtered()), cols = visibleCols(), tb = $('body');
+  $('count').textContent = `${rows.length} of ${cars.length} models`;
+  if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; return; }
+  tb.innerHTML = rows.map(c=>"<tr>"+cols.map(col=>{
+    const cls = [col.num?"num":"", col.wrap?"wrap":""].join(" ").trim();
+    const html = col.render ? col.render(c) : (c[col.key]==null||c[col.key]==="" ? unk() : esc(c[col.key]));
+    return `<td${cls?` class="${cls}"`:""}>${html}</td>`;
+  }).join("")+"</tr>").join("");
+}
+
+function renderColPanel(){
+  const list = $('collist'); list.innerHTML = "";
+  layout.order.forEach((key,i)=>{
+    const col = COLMAP[key], row = document.createElement('div');
+    row.className = "colrow"; row.draggable = true; row.dataset.key = key;
+    row.innerHTML = `<span class="grip">⠿</span><label><input type="checkbox" ${layout.hidden.includes(key)?"":"checked"}> ${esc(col.label)}</label>
+      <button title="Move up" ${i===0?"disabled":""}>↑</button><button title="Move down" ${i===layout.order.length-1?"disabled":""}>↓</button>`;
+    row.querySelector('input').addEventListener('change', e=>{
+      layout.hidden = e.target.checked ? layout.hidden.filter(k=>k!==key) : layout.hidden.concat(key);
+      if (visibleCols().length===0){ layout.hidden = layout.hidden.filter(k=>k!==key); e.target.checked = true; }
+      refresh();
+    });
+    const [up, down] = row.querySelectorAll('button');
+    up.addEventListener('click', ()=>swap(i, i-1)); down.addEventListener('click', ()=>swap(i, i+1));
+    row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', key); row.classList.add('dragging'); });
+    row.addEventListener('dragend', ()=>row.classList.remove('dragging'));
+    row.addEventListener('dragover', e=>e.preventDefault());
+    row.addEventListener('drop', e=>{ e.preventDefault(); moveCol(e.dataTransfer.getData('text/plain'), key); });
+    list.appendChild(row);
+  });
+}
+
+function swap(i,j){ if (j<0||j>=layout.order.length) return; const o = layout.order; [o[i],o[j]]=[o[j],o[i]]; refresh(); }
+function moveCol(from, to){
+  if (!from || from===to || !COLMAP[from]) return;
+  const o = layout.order.filter(k=>k!==from); o.splice(o.indexOf(to), 0, from); layout.order = o; refresh();
+}
+function onSort(key, add){
+  const cur = layout.sort.find(s=>s.key===key);
+  if (add){
+    if (cur) cur.dir *= -1; else layout.sort.push({key, dir:1});
+  } else {
+    layout.sort = [{key, dir: cur && layout.sort.length===1 ? -cur.dir : 1}];
+  }
+  refresh();
+}
+function refresh(){ saveLayout(); renderHead(); renderBody(); renderColPanel(); }
+
+function setupFilters(){
+  const brands = [...new Set(cars.map(c=>c.brand))].sort();
+  $('f-brand').innerHTML = brands.map(b=>`<label><input type="checkbox" value="${esc(b)}"> ${esc(b)}</label>`).join("");
+  const types = [...new Set(cars.map(c=>c.type))].sort();
+  $('f-type').innerHTML = '<option value="">Any</option>' + types.map(t=>`<option>${esc(t)}</option>`).join("");
+  $('filters').addEventListener('input', renderBody);
+  $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
+  $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
+  $('colpanel').addEventListener('click', e=>e.stopPropagation());
+  document.addEventListener('click', ()=>{ $('colpanel').classList.remove('open'); $('colbtn').setAttribute('aria-expanded','false'); });
+  $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
+}
+function clearFilters(){
+  document.querySelectorAll('#f-brand input').forEach(i=>i.checked=false);
+  ['f-drive','f-motor','f-cells','f-center','f-type'].forEach(id=>$(id).value="");
+  $('f-price').value=""; $('f-q').value="";
+}
+
+if (REPO_URL) $('contrib').innerHTML = `<a href="${esc(REPO_URL)}/edit/main/cars.json">Edit cars.json on GitHub</a> and include a source link — see <a href="${esc(REPO_URL)}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.`;
+
+fetch('cars.json', {cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); }).then(data=>{
+  cars = data; setupFilters(); refresh();
+}).catch(err=>{
+  $('body').innerHTML = `<tr><td class="empty">Couldn't load cars.json (${esc(err.message)}). If you opened this file directly from disk, serve it over HTTP instead (e.g. GitHub Pages or <code>python -m http.server</code>).</td></tr>`;
+});
+</script>
+</body>
+</html>

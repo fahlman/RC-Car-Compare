@@ -21,7 +21,7 @@ const ENUMS = {
   centerDiff: ["yes", "no", "optional", "n/a", null],
   centerDiffGears: ["metal", "composite", null],
 };
-const REQUIRED = ["brand", "model", "scale", "type", "drive", "motor", "completion", "source", "verified"];
+const REQUIRED = ["brand", "model", "platform", "scale", "type", "drive", "motor", "completion", "source", "verified"];
 const ALLOWED = new Set([...REQUIRED, "sku", "motorDetail", "minCells", "maxCells", "topSpeedMph", "speedNote",
   "centerDiff", "centerDiffGears", "frontRearDiffs", "priceUsd", "notes"]);
 

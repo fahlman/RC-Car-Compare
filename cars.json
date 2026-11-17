@@ -2,6 +2,7 @@
   {
     "brand": "Arrma",
     "model": "Granite 223S DSC 4X4",
+    "platform": "Arrma 223S 4X4",
     "sku": "ARA4302V4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -24,6 +25,7 @@
   {
     "brand": "Arrma",
     "model": "Big Rock 223S DSC 4X4",
+    "platform": "Arrma 223S 4X4",
     "sku": "ARA4312V4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -46,6 +48,7 @@
   {
     "brand": "Arrma",
     "model": "Senton 223S DSC 4X4",
+    "platform": "Arrma 223S 4X4",
     "sku": "ARA4303V4",
     "scale": "1/10",
     "type": "Short course truck",
@@ -68,6 +71,7 @@
   {
     "brand": "Arrma",
     "model": "Vorteks 223S DSC 4X4",
+    "platform": "Arrma 223S 4X4",
     "sku": "ARA4305V4",
     "scale": "1/10",
     "type": "Stadium truck",
@@ -90,6 +94,7 @@
   {
     "brand": "Arrma",
     "model": "Kraton 4S V2.5 BLX",
+    "platform": "Arrma 4S BLX 4X4",
     "sku": "ARA4408V2",
     "scale": "1/10",
     "type": "Monster truck",
@@ -112,6 +117,7 @@
   {
     "brand": "Traxxas",
     "model": "Slash 4X4 VXL",
+    "platform": "Traxxas 1/10 4X4 (Slash/Rustler/Stampede/Hoss)",
     "sku": "68386-4",
     "scale": "1/10",
     "type": "Short course truck",
@@ -134,6 +140,7 @@
   {
     "brand": "Traxxas",
     "model": "Rustler 4X4 VXL",
+    "platform": "Traxxas 1/10 4X4 (Slash/Rustler/Stampede/Hoss)",
     "sku": "67376-4",
     "scale": "1/10",
     "type": "Stadium truck",
@@ -156,6 +163,7 @@
   {
     "brand": "Traxxas",
     "model": "Stampede 4X4 VXL",
+    "platform": "Traxxas 1/10 4X4 (Slash/Rustler/Stampede/Hoss)",
     "sku": "90376-4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -178,6 +186,7 @@
   {
     "brand": "Traxxas",
     "model": "Hoss 4X4 VXL",
+    "platform": "Traxxas 1/10 4X4 (Slash/Rustler/Stampede/Hoss)",
     "sku": "90076-4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -200,6 +209,7 @@
   {
     "brand": "Traxxas",
     "model": "Maxx with WideMaxx",
+    "platform": "Traxxas Maxx",
     "sku": "89086-4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -222,6 +232,7 @@
   {
     "brand": "Team Associated",
     "model": "Rival MT10 Brushless RTR V2",
+    "platform": "Team Associated Rival MT10 / Pro4",
     "sku": "20518",
     "scale": "1/10",
     "type": "Monster truck",
@@ -244,6 +255,7 @@
   {
     "brand": "Team Associated",
     "model": "Rival MT10 Brushed RTR LiPo Combo",
+    "platform": "Team Associated Rival MT10 / Pro4",
     "sku": "20517C",
     "scale": "1/10",
     "type": "Monster truck",
@@ -266,6 +278,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro4 SC10 RTR",
+    "platform": "Team Associated Rival MT10 / Pro4",
     "sku": "20530",
     "scale": "1/10",
     "type": "Short course truck",
@@ -288,6 +301,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro4 SC10 General Tire RTR",
+    "platform": "Team Associated Rival MT10 / Pro4",
     "sku": "20531",
     "scale": "1/10",
     "type": "Short course truck",
@@ -310,6 +324,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro4 SC10 Brushed RTR Combo",
+    "platform": "Team Associated Rival MT10 / Pro4",
     "sku": "20532C",
     "scale": "1/10",
     "type": "Short course truck",
@@ -332,6 +347,7 @@
   {
     "brand": "Losi",
     "model": "Baja Rey 2.0 Ford F100 Isenhouer Brothers",
+    "platform": "Losi Baja Rey",
     "sku": "LOS03049",
     "scale": "1/10",
     "type": "Desert truck",
@@ -354,6 +370,7 @@
   {
     "brand": "Redcat",
     "model": "Valkyrie MT",
+    "platform": "Redcat Valkyrie",
     "sku": null,
     "scale": "1/10",
     "type": "Monster truck",
@@ -376,6 +393,7 @@
   {
     "brand": "Redcat",
     "model": "Valkyrie TR",
+    "platform": "Redcat Valkyrie",
     "sku": null,
     "scale": "1/10",
     "type": "Truggy",
@@ -398,6 +416,7 @@
   {
     "brand": "Redcat",
     "model": "Volcano EPX",
+    "platform": "Redcat Volcano",
     "sku": null,
     "scale": "1/10",
     "type": "Monster truck",
@@ -420,6 +439,7 @@
   {
     "brand": "Team Corally",
     "model": "Kagama 4 XL4S",
+    "platform": "Corally Syncro4",
     "sku": "C-00293",
     "scale": "1/10",
     "type": "Monster truck",
@@ -442,6 +462,7 @@
   {
     "brand": "Team Corally",
     "model": "Punisher 4",
+    "platform": "Corally Punisher 4",
     "sku": "C-00292",
     "scale": "1/10",
     "type": "Monster truck",
@@ -464,6 +485,7 @@
   {
     "brand": "Team Corally",
     "model": "Sketer XP",
+    "platform": "Corally Sketer",
     "sku": "C-00191",
     "scale": "1/10",
     "type": "Monster truck",
@@ -486,6 +508,7 @@
   {
     "brand": "RLAARLO",
     "model": "Storm Breaker SBK10 Metal",
+    "platform": "RLAARLO SBK10",
     "sku": "SBK10-O-A",
     "scale": "1/10",
     "type": "Buggy",
@@ -508,6 +531,7 @@
   {
     "brand": "RLAARLO",
     "model": "Storm Breaker SBK10 Carbon Fiber",
+    "platform": "RLAARLO SBK10",
     "sku": "SBK10-B-C",
     "scale": "1/10",
     "type": "Buggy",
@@ -530,6 +554,7 @@
   {
     "brand": "RLAARLO",
     "model": "XTS-F10 Metal",
+    "platform": "RLAARLO XTS-F10",
     "sku": null,
     "scale": "1/10",
     "type": "Rally car",
@@ -552,6 +577,7 @@
   {
     "brand": "RLAARLO",
     "model": "XTS-F10 Carbon Fiber",
+    "platform": "RLAARLO XTS-F10",
     "sku": null,
     "scale": "1/10",
     "type": "Rally car",
@@ -574,6 +600,7 @@
   {
     "brand": "Kyosho",
     "model": "KB10W Mad Wagon VE Readyset",
+    "platform": "Kyosho KB10",
     "sku": "34701T2",
     "scale": "1/10",
     "type": "Monster truck",
@@ -596,6 +623,7 @@
   {
     "brand": "Kyosho",
     "model": "KB10L Toyota Tacoma TRD Pro Readyset",
+    "platform": "Kyosho KB10",
     "sku": "34703T1",
     "scale": "1/10",
     "type": "Monster truck",
@@ -618,6 +646,7 @@
   {
     "brand": "Traxxas",
     "model": "Rustler 2WD Brushless",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "37454-4",
     "scale": "1/10",
     "type": "Stadium truck",
@@ -640,6 +669,7 @@
   {
     "brand": "Traxxas",
     "model": "Rustler 2WD BL-2s",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "37354-4",
     "scale": "1/10",
     "type": "Stadium truck",
@@ -662,6 +692,7 @@
   {
     "brand": "Traxxas",
     "model": "Rustler 2WD XL-5 w/Battery",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "37254-8",
     "scale": "1/10",
     "type": "Stadium truck",
@@ -684,6 +715,7 @@
   {
     "brand": "Traxxas",
     "model": "Slash 2WD Brushless",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "58434-4",
     "scale": "1/10",
     "type": "Short course truck",
@@ -706,6 +738,7 @@
   {
     "brand": "Traxxas",
     "model": "Slash 2WD BL-2s",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "58334-4",
     "scale": "1/10",
     "type": "Short course truck",
@@ -728,6 +761,7 @@
   {
     "brand": "Traxxas",
     "model": "Slash 2WD XL-5 w/Battery",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "58234-8",
     "scale": "1/10",
     "type": "Short course truck",
@@ -750,6 +784,7 @@
   {
     "brand": "Traxxas",
     "model": "Stampede 2WD Brushless",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "136454-4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -772,6 +807,7 @@
   {
     "brand": "Traxxas",
     "model": "Stampede 2WD BL-2s",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "36354-4",
     "scale": "1/10",
     "type": "Monster truck",
@@ -794,6 +830,7 @@
   {
     "brand": "Traxxas",
     "model": "Stampede 2WD XL-5 w/Battery",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "36254-8",
     "scale": "1/10",
     "type": "Monster truck",
@@ -816,6 +853,7 @@
   {
     "brand": "Traxxas",
     "model": "Bandit XL-5 w/Battery",
+    "platform": "Traxxas 2WD (Magnum 272)",
     "sku": "24254-8",
     "scale": "1/10",
     "type": "Buggy",
@@ -838,6 +876,7 @@
   {
     "brand": "Arrma",
     "model": "Fury 223S DSC 2WD",
+    "platform": "Arrma 2WD (Gorgon/Fury/Quake)",
     "sku": "ARA3521",
     "scale": "1/10",
     "type": "Short course truck",
@@ -860,6 +899,7 @@
   {
     "brand": "Arrma",
     "model": "Quake 223S DSC 2WD",
+    "platform": "Arrma 2WD (Gorgon/Fury/Quake)",
     "sku": "ARA3537",
     "scale": "1/10",
     "type": "Monster truck",
@@ -882,6 +922,7 @@
   {
     "brand": "Arrma",
     "model": "Gorgon 223S 2WD",
+    "platform": "Arrma 2WD (Gorgon/Fury/Quake)",
     "sku": "ARA3530",
     "scale": "1/10",
     "type": "Monster truck",
@@ -904,6 +945,7 @@
   {
     "brand": "Arrma",
     "model": "Gorgon 2WD Brushed w/Battery",
+    "platform": "Arrma 2WD (Gorgon/Fury/Quake)",
     "sku": "ARA3230S",
     "scale": "1/10",
     "type": "Monster truck",
@@ -926,6 +968,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro2 SC10sw RTR",
+    "platform": "Team Associated Pro2",
     "sku": "70040",
     "scale": "1/10",
     "type": "Short course truck",
@@ -948,6 +991,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro2 LT10SW RTR",
+    "platform": "Team Associated Pro2",
     "sku": "70023",
     "scale": "1/10",
     "type": "Short course truck",
@@ -970,6 +1014,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro2 RT10SW RTR",
+    "platform": "Team Associated Pro2",
     "sku": "70024",
     "scale": "1/10",
     "type": "Rat rod truck",
@@ -992,6 +1037,7 @@
   {
     "brand": "Team Associated",
     "model": "Pro2 DK10SW Dakar Buggy RTR",
+    "platform": "Team Associated Pro2",
     "sku": "90038",
     "scale": "1/10",
     "type": "Buggy",
@@ -1014,6 +1060,7 @@
   {
     "brand": "Team Associated",
     "model": "RB10 RTR",
+    "platform": "Team Associated RB10",
     "sku": "90031",
     "scale": "1/10",
     "type": "Buggy",
@@ -1036,6 +1083,7 @@
   {
     "brand": "Team Associated",
     "model": "Trophy Rat RTR",
+    "platform": "Team Associated Trophy Rat",
     "sku": "70019",
     "scale": "1/10",
     "type": "Off-road truck",
@@ -1058,6 +1106,7 @@
   {
     "brand": "HPI Racing",
     "model": "Jumpshot MT Flux",
+    "platform": "HPI Jumpshot (TVP)",
     "sku": "160030",
     "scale": "1/10",
     "type": "Monster truck",
@@ -1080,6 +1129,7 @@
   {
     "brand": "HPI Racing",
     "model": "Jumpshot SC Flux",
+    "platform": "HPI Jumpshot (TVP)",
     "sku": "160031",
     "scale": "1/10",
     "type": "Short course truck",
@@ -1102,6 +1152,7 @@
   {
     "brand": "HPI Racing",
     "model": "Jumpshot ST Flux",
+    "platform": "HPI Jumpshot (TVP)",
     "sku": "160032",
     "scale": "1/10",
     "type": "Stadium truck",

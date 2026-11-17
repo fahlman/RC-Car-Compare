@@ -94,6 +94,7 @@
         </select></div>
       <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
       <div class="f"><span>Type</span><select id="f-type"><option value="">Any</option></select></div>
+      <div class="f"><span>Platform</span><select id="f-platform"><option value="">Any</option></select></div>
       <div class="f"><span>Search</span><input type="search" id="f-q" placeholder="Model, SKU, notes…"></div>
     </div>
   </section>
@@ -125,6 +126,7 @@ const REPO_URL = "";
 const COLUMNS = [
   { key:"brand", label:"Brand", render:c=>`<span class="brand">${esc(c.brand)}</span>` },
   { key:"model", label:"Model", render:c=>esc(c.model) },
+  { key:"platform", label:"Platform" },
   { key:"sku", label:"SKU", hidden:true },
   { key:"scale", label:"Scale" },
   { key:"type", label:"Type" },
@@ -145,6 +147,7 @@ const COLUMNS = [
 ];
 const COLMAP = Object.fromEntries(COLUMNS.map(c=>[c.key,c]));
 const STORE_KEY = "rc-compare-layout-v1";
+// New columns are appended to saved layouts automatically (see loadLayout).
 
 function esc(s){ return String(s??"").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]); }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -174,13 +177,14 @@ function sortValue(col, c){ return col.sortVal ? col.sortVal(c) : c[col.key]; }
 function filtered(){
   const brands = [...document.querySelectorAll('#f-brand input:checked')].map(i=>i.value);
   const drive = $('f-drive').value, motor = $('f-motor').value, cells = +$('f-cells').value || 0;
-  const center = $('f-center').value, maxPrice = parseFloat($('f-price').value), type = $('f-type').value;
+  const center = $('f-center').value, maxPrice = parseFloat($('f-price').value), type = $('f-type').value, platform = $('f-platform').value;
   const q = $('f-q').value.trim().toLowerCase();
   return cars.filter(c=>{
     if (brands.length && !brands.includes(c.brand)) return false;
     if (drive && c.drive!==drive) return false;
     if (motor && c.motor!==motor) return false;
     if (type && c.type!==type) return false;
+    if (platform && c.platform!==platform) return false;
     if (cells && !(c.minCells<=cells && cells<=c.maxCells)) return false;
     if (center==="metal" && !(c.centerDiff==="yes" && c.centerDiffGears==="metal")) return false;
     if (center==="no" && !(c.centerDiff==="no" || c.centerDiff==="n/a")) return false;
@@ -276,6 +280,8 @@ function setupFilters(){
   $('f-brand').innerHTML = brands.map(b=>`<label><input type="checkbox" value="${esc(b)}"> ${esc(b)}</label>`).join("");
   const types = [...new Set(cars.map(c=>c.type))].sort();
   $('f-type').innerHTML = '<option value="">Any</option>' + types.map(t=>`<option>${esc(t)}</option>`).join("");
+  const plats = [...new Set(cars.map(c=>c.platform))].sort();
+  $('f-platform').innerHTML = '<option value="">Any</option>' + plats.map(t=>`<option>${esc(t)}</option>`).join("");
   $('filters').addEventListener('input', renderBody);
   $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
   $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
@@ -285,7 +291,7 @@ function setupFilters(){
 }
 function clearFilters(){
   document.querySelectorAll('#f-brand input').forEach(i=>i.checked=false);
-  ['f-drive','f-motor','f-cells','f-center','f-type'].forEach(id=>$(id).value="");
+  ['f-drive','f-motor','f-cells','f-center','f-type','f-platform'].forEach(id=>$(id).value="");
   $('f-price').value=""; $('f-q').value="";
 }
 

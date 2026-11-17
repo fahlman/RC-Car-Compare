@@ -28,6 +28,7 @@ By contributing, you agree that your changes to `cars.json` are licensed under [
 |---|---|---|
 | `brand` | `"Arrma"` | |
 | `model` | `"Senton 223S DSC 4X4"` | Name as the maker writes it |
+| `platform` | `"Arrma 223S 4X4"` | Required. The shared chassis/drivetrain family. Reuse an existing name when the maker's parts lists show the models share major parts (transmission, diffs, chassis); otherwise give the model its own name like `"Losi Baja Rey"` |
 | `sku` | `"ARA4303V4"` | Optional. Base part number without the color suffix, if the maker publishes one |
 | `scale` | `"1/10"` | |
 | `type` | `"Short course truck"` | Monster truck, Stadium truck, Short course truck, Buggy, Truggy, On-road, etc. |

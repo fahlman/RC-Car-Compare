@@ -70,5 +70,7 @@ pull requests. Scope and data rules for contributors are in
   https://code.fahlsing.com/RC-Car-Compare/, the custom domain of
   `fahlman.github.io`. Every push to `main` updates the live site within a few
   minutes. There are no versions or tags.
+- Pages builds the repository with Jekyll. A symlink that points outside the
+  repository makes the build fail, so `AGENTS.md` is a regular file here.
 - Pending: `REPO_URL` in `index.html` is still empty, so the footer has no
   "Edit on GitHub" link.

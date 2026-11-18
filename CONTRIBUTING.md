@@ -34,7 +34,9 @@ By contributing, you agree that your changes to `cars.json` are licensed under [
 | `type` | `"Short course truck"` | Monster truck, Stadium truck, Short course truck, Buggy, Truggy, On-road, etc. |
 | `drive` | `"4WD"` | `4WD` or `2WD` |
 | `motor` | `"Brushless"` | `Brushless` or `Brushed` |
-| `motorDetail` | `"Spektrum 3100Kv"` | Optional |
+| `motorDetail` | `"Spektrum Firma"` | Optional. The motor's name. Size and Kv go in their own fields. For a brushed motor, include the turns (e.g. `"Titan 12T"`) |
+| `motorSize` | `"3660"` | Can size as the maker writes it, like `"3660"`, `"550"` or `"540XL"`. `null` if the maker doesn't publish it |
+| `motorKv` | `3100` | Kv as a number. Brushed motors are usually rated in turns instead, so this is often `null` for them |
 | `minCells` / `maxCells` | `2` / `3` | LiPo cell counts the stock ESC supports (3 = 3S) |
 | `topSpeedMph` | `50` | The maker's claim as a number. Put conditions in `speedNote` |
 | `speedNote` | `"50+ mph on 3S, per Arrma"` | Say if optional gearing is needed |

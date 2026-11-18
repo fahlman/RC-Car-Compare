@@ -132,6 +132,8 @@ const COLUMNS = [
   { key:"type", label:"Type" },
   { key:"drive", label:"Drive" },
   { key:"motor", label:"Motor" },
+  { key:"motorSize", label:"Motor size" },
+  { key:"motorKv", label:"Kv", num:true },
   { key:"motorDetail", label:"Motor detail", hidden:true },
   { key:"battery", label:"Battery", sortVal:c=>c.maxCells, render:c=> c.maxCells==null ? unk() : (c.minCells===c.maxCells? `${c.maxCells}S` : `${c.minCells}S–${c.maxCells}S`) + " LiPo" },
   { key:"topSpeedMph", label:"Top speed", num:true, render:c=> c.topSpeedMph==null ? unk() : `<span title="${esc(c.speedNote||'')}">${(c.speedNote||'').includes('+')?'':'~'}${c.topSpeedMph}${(c.speedNote||'').includes('+')?'+':''} mph</span>` },
@@ -147,7 +149,6 @@ const COLUMNS = [
 ];
 const COLMAP = Object.fromEntries(COLUMNS.map(c=>[c.key,c]));
 const STORE_KEY = "rc-compare-layout-v1";
-// New columns are appended to saved layouts automatically (see loadLayout).
 
 function esc(s){ return String(s??"").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]); }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -158,8 +159,15 @@ function loadLayout(){
   try {
     const s = JSON.parse(localStorage.getItem(STORE_KEY));
     if (s && Array.isArray(s.order)) {
-      // keep only known columns, append any new ones added later
-      s.order = s.order.filter(k=>COLMAP[k]).concat(COLUMNS.map(c=>c.key).filter(k=>!s.order.includes(k)));
+      // Keep only known columns, and put any column added since the layout was saved
+      // right after the column it follows by default, so it lands where it belongs.
+      const order = s.order.filter(k=>COLMAP[k]);
+      COLUMNS.forEach((c,i)=>{
+        if (order.includes(c.key)) return;
+        const prev = COLUMNS.slice(0,i).reverse().find(p=>order.includes(p.key));
+        order.splice(prev ? order.indexOf(prev.key)+1 : 0, 0, c.key);
+      });
+      s.order = order;
       s.hidden = (s.hidden||[]).filter(k=>COLMAP[k]); s.sort = (s.sort||[]).filter(x=>COLMAP[x.key]);
       return s;
     }

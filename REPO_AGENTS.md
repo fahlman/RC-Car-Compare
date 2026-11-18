@@ -72,5 +72,6 @@ pull requests. Scope and data rules for contributors are in
   minutes. There are no versions or tags.
 - Pages builds the repository with Jekyll. A symlink that points outside the
   repository makes the build fail, so `AGENTS.md` is a regular file here.
-- Pending: `REPO_URL` in `index.html` is still empty, so the footer has no
-  "Edit on GitHub" link.
+- `REPO_URL` in `index.html` points to this repository, so the footer links
+  to `cars.json` on GitHub and to `CONTRIBUTING.md`. Update it if the
+  repository is renamed or moved.

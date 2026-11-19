@@ -50,7 +50,9 @@
   .colrow label { flex:1; display:flex; gap:7px; align-items:center; cursor:pointer; }
   .colrow button { padding:0 6px; font-size:12px; line-height:20px; }
 
-  .tablewrap { overflow:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); }
+  /* The table scrolls inside its own box, no taller than the window, so the sticky header row stays in view. */
+  .tablewrap { overflow:auto; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px);
+               border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); }
   table { border-collapse:separate; border-spacing:0; width:100%; min-width:900px; }
   th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; white-space:nowrap; }
   td.wrap { white-space:normal; min-width:240px; max-width:380px; color:var(--muted); font-size:13.5px; }

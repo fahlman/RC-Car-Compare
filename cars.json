@@ -396,8 +396,8 @@
     "completion": "RTR",
     "priceUsd": 549.99,
     "source": "https://www.losi.com/product/losi-1-10-baja-rey-2.0-ford-f100-isenhouer-brothers-3s-4x4-rtr-brushless-black/LOS03049.html",
-    "verified": "2026-11-17",
-    "notes": "Losi lists sealed metal-gear front and center diffs; the rear axle uses the same diff design. Listed on backorder (January 2027). Losi's other 1/10 4WD RTRs are discontinued."
+    "verified": "2026-11-19",
+    "notes": "Losi lists sealed metal-gear front and center diffs; the rear axle uses the same diff design. Listed in stock as of 2026-11-19. Losi's other 1/10 4WD RTRs are discontinued."
   },
   {
     "brand": "Redcat",
@@ -420,8 +420,8 @@
     "completion": "RTR",
     "priceUsd": 359.99,
     "source": "https://www.redcatracing.com/products/redcat-valkyrie-mt-rc-offroad-truck-1-10-4s-brushless-electric-truck",
-    "verified": "2026-11-17",
-    "notes": "Redcat lists three differentials on this 4WD truck (front, center and rear). Diff gear material and top speed not published. 120A ESC."
+    "verified": "2026-11-19",
+    "notes": "Redcat lists three differentials on this 4WD truck (front, center and rear). Diff gear material and top speed not published. 120A ESC. Price is Redcat's regular price (on sale for $287.99)."
   },
   {
     "brand": "Redcat",
@@ -444,8 +444,8 @@
     "completion": "RTR",
     "priceUsd": 359.99,
     "source": "https://www.redcatracing.com/products/redcat-valkyrie-tr-rc-offroad-truggy-1-10-4s-brushless-electric-truggy",
-    "verified": "2026-11-17",
-    "notes": "Redcat lists three differentials (front, center and rear). Diff gear material and top speed not published. 120A ESC."
+    "verified": "2026-11-19",
+    "notes": "Redcat lists three differentials (front, center and rear). Diff gear material and top speed not published. 120A ESC. Price is Redcat's regular price (on sale for $287.99)."
   },
   {
     "brand": "Redcat",
@@ -469,8 +469,8 @@
     "completion": "RTR",
     "priceUsd": 199.95,
     "source": "https://www.redcatracing.com/products/volcano-epx-1-10-scale-electric-monster-truck",
-    "verified": "2026-11-17",
-    "notes": "Includes 7.2V 2000mAh NiMH battery and charger. LiPo compatibility not stated. Front and rear gear diffs only."
+    "verified": "2026-11-19",
+    "notes": "Includes 7.2V 2000mAh NiMH battery and charger. LiPo compatibility not stated. Front and rear gear diffs only. Price is Redcat's regular price (on sale for $159.96)."
   },
   {
     "brand": "Team Corally",
@@ -542,10 +542,10 @@
     "centerDiffGears": "metal",
     "frontRearDiffs": "Sealed, metal gears, composite case",
     "completion": "RTR",
-    "priceUsd": null,
+    "priceUsd": 519.0,
     "source": "https://corally.com/en/product/C-00191/team-corally-sketer-xl4s-monster-truck-ep-rtr-brushless-power-4s-no-battery-no-charger",
-    "verified": "2026-11-17",
-    "notes": "XL4S class. Corally lists three sealed metal diffs with an aluminum/steel center diff. Not listed on CorallyUS; corally.com price is EUR 549 and shows it out of stock."
+    "verified": "2026-11-19",
+    "notes": "XL4S class. Corally lists three sealed metal diffs with an aluminum/steel center diff. Price is CorallyUS's regular price; sold out there as of 2026-11-19."
   },
   {
     "brand": "RLAARLO",
@@ -569,8 +569,8 @@
     "completion": "RTR",
     "priceUsd": 249.99,
     "source": "https://rlaarlo.com/products/rlaarlo-metal-brushless-buggy-sbk10",
-    "verified": "2026-11-17",
-    "notes": "RLAARLO lists 'Transmission Mode: Central Differential'. Diff gear material not stated. Spec list mentions a 3S 2200mAh LiPo; check whether it's included."
+    "verified": "2026-11-19",
+    "notes": "RLAARLO lists 'Transmission Mode: Central Differential'. Diff gear material not stated. Spec list mentions a 3S 2200mAh LiPo; check whether it's included. Price is the regular price (on sale for $199.99)."
   },
   {
     "brand": "RLAARLO",
@@ -594,8 +594,8 @@
     "completion": "RTR",
     "priceUsd": 279.99,
     "source": "https://rlaarlo.com/products/rlaarlo-carbon-fiber-brushless-4wd-buggy-sbk10",
-    "verified": "2026-11-17",
-    "notes": "RLAARLO lists 'Transmission Mode: Central Differential'. Diff gear material not stated."
+    "verified": "2026-11-19",
+    "notes": "RLAARLO lists 'Transmission Mode: Central Differential'. Diff gear material not stated. Price is the regular price (on sale for $259.99)."
   },
   {
     "brand": "RLAARLO",
@@ -743,9 +743,9 @@
     "frontRearDiffs": "Rear: planetary steel gear",
     "completion": "RTR",
     "priceUsd": 249.95,
-    "source": "https://traxxas.com/37354-4-rustler-2wd-bl-2s",
-    "verified": "2026-11-17",
-    "notes": "Price from Traxxas's parts finder page for this model. Motor size from Traxxas's instruction sheet for the stock motor, #3384."
+    "source": "https://traxxas.com/rustler-2wd-bl-2s-37354-4",
+    "verified": "2026-11-19",
+    "notes": "Motor size from Traxxas's instruction sheet for the stock motor, #3384."
   },
   {
     "brand": "Traxxas",
@@ -818,9 +818,9 @@
     "frontRearDiffs": "Rear: planetary, steel ring gear",
     "completion": "RTR",
     "priceUsd": 269.95,
-    "source": "https://traxxas.com/58334-4-slash-2wd-bl-2s",
-    "verified": "2026-11-17",
-    "notes": "Price from Traxxas's parts finder page for this model. Motor size from Traxxas's instruction sheet for the stock motor, #3384."
+    "source": "https://traxxas.com/slash-2wd-bl-2s-58334-4",
+    "verified": "2026-11-19",
+    "notes": "Motor size from Traxxas's instruction sheet for the stock motor, #3384."
   },
   {
     "brand": "Traxxas",
@@ -893,9 +893,9 @@
     "frontRearDiffs": "Rear: planetary steel gear",
     "completion": "RTR",
     "priceUsd": 249.95,
-    "source": "https://traxxas.com/products/landing/stampede-2wd-bl-2s/",
-    "verified": "2026-11-17",
-    "notes": "Price from Traxxas's parts finder page for this model. Motor size from Traxxas's instruction sheet for the stock motor, #3384."
+    "source": "https://traxxas.com/stampede-2wd-bl-2s-36354-4",
+    "verified": "2026-11-19",
+    "notes": "Motor size from Traxxas's instruction sheet for the stock motor, #3384."
   },
   {
     "brand": "Traxxas",

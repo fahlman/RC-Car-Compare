@@ -72,6 +72,12 @@ pull requests. Scope and data rules for contributors are in
   minutes. There are no versions or tags.
 - Pages builds the repository with Jekyll. A symlink that points outside the
   repository makes the build fail, so `AGENTS.md` is a regular file here.
+- `AMAZON_TAG` in `index.html` is empty until Ryan has an Amazon Associates
+  tracking ID. While it's empty, the Amazon column and the Associates
+  disclosure above the table stay hidden. Setting it turns both on. Amazon
+  requires the disclosure wherever its affiliate links appear, so don't show
+  the links without it. Cars link to Amazon through the optional `amazonAsin`
+  field in `cars.json`.
 - `REPO_URL` in `index.html` points to this repository, so the footer links
   to `cars.json` on GitHub and to `CONTRIBUTING.md`. Update it if the
   repository is renamed or moved.

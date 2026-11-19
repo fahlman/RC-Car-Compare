@@ -21,6 +21,7 @@ By contributing, you agree that your changes to `cars.json` are licensed under [
 - **Scale labels:** If the maker calls it 1/10 but uses a special label (like Corally's "XL4S" or a "Mini 1:10"), use `"1/10"` only if the maker's own spec table says 1/10, and put the label in `notes`. Otherwise use the maker's wording.
 - **Speeds in km/h:** Use the maker's own mph figure if they give one. If not, convert (km/h ÷ 1.609, rounded down) and put the original in `speedNote`.
 - **Sale prices:** Use the regular price, not a sale price. Mention the sale in `notes` if you like.
+- **Amazon item numbers:** `amazonAsin` is the one field that doesn't come from the maker's site, because it's a shopping link, not data. Use the exact model and version, from a listing sold by Amazon or by the maker's own Amazon store, not a third-party seller. Add only the item number; the site adds its own Associates tag.
 
 ## Field reference
 
@@ -45,6 +46,7 @@ By contributing, you agree that your changes to `cars.json` are licensed under [
 | `frontRearDiffs` | `"Metal gear"` | Free text from the spec sheet. For 2WD, start with "Rear:" |
 | `completion` | `"RTR"` | `RTR`, `Kit` or `Roller` |
 | `priceUsd` | `339.99` | The regular US price shown on the manufacturer's site (not a sale price). For Team Associated, use the MAP price, or the online price if no MAP is shown, and say which in `notes`. Number only |
+| `amazonAsin` | `"B0ABC12345"` | Optional. The 10-character Amazon item number (ASIN), found in the listing's link after `/dp/` or under "Product information". Leave it out if the car isn't sold on Amazon |
 | `source` | `"https://traxxas.com/…"` | Required. Must be the manufacturer's own site. If a fact came from a parts list or manual, say which in `notes` |
 | `verified` | `"2026-11-17"` | Required |
 | `notes` | `""` | Anything a buyer should know |

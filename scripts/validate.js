@@ -23,7 +23,7 @@ const ENUMS = {
 };
 const REQUIRED = ["brand", "model", "platform", "scale", "type", "drive", "motor", "completion", "source", "verified"];
 const ALLOWED = new Set([...REQUIRED, "sku", "motorDetail", "motorSize", "motorKv", "minCells", "maxCells", "topSpeedMph", "speedNote",
-  "centerDiff", "centerDiffGears", "frontRearDiffs", "priceUsd", "notes"]);
+  "centerDiff", "centerDiffGears", "frontRearDiffs", "priceUsd", "amazonAsin", "notes"]);
 
 // Sources must be the manufacturer's own website. Add a brand here when it's added to the table.
 const MANUFACTURER_SITES = {
@@ -54,6 +54,7 @@ cars.forEach((c, i) => {
     if (c[k] != null && !(typeof c[k] === "number" && c[k] > 0)) errors.push(`${where}: "${k}" must be a number without units or "$" (e.g. 369.99), or null if unknown.`);
   if (c.motorKv != null && !(Number.isInteger(c.motorKv) && c.motorKv > 0)) errors.push(`${where}: "motorKv" must be a whole number like 3100, or null if unknown.`);
   if (c.motorSize != null && !(typeof c.motorSize === "string" && /^\d{3,4}[A-Z]*$/.test(c.motorSize))) errors.push(`${where}: "motorSize" should be the can size as the maker writes it, like "3660" or "550", or null if unknown.`);
+  if (c.amazonAsin != null && !(typeof c.amazonAsin === "string" && /^B[0-9A-Z]{9}$/.test(c.amazonAsin))) errors.push(`${where}: "amazonAsin" must be just the 10-character Amazon item number, like "B0ABC12345" (not a link), or left out.`);
   if (c.drive === "2WD" && c.centerDiff !== "n/a") errors.push(`${where}: 2WD models have no center diff — set "centerDiff" to "n/a".`);
   if (c.drive === "4WD" && c.centerDiff === "n/a") errors.push(`${where}: "n/a" is only for 2WD models.`);
   if (c.centerDiffGears && c.centerDiff !== "yes") errors.push(`${where}: centerDiffGears is set but centerDiff is not "yes".`);

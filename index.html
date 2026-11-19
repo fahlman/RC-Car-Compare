@@ -112,6 +112,7 @@
     </div>
   </div>
 
+  <p class="hint" id="amazonnote" hidden>As an Amazon Associate I earn from qualifying purchases. Amazon's price may differ from the maker's price shown here.</p>
   <div class="tablewrap"><table><thead><tr id="headrow"></tr></thead><tbody id="body"></tbody></table></div>
   <p class="hint">“?” means not verified yet. Speeds are the maker's claims and often assume optional gearing. All data comes from the manufacturers' own websites; prices are their regular US list prices on the date shown.</p>
 </main>
@@ -122,6 +123,9 @@
 <script>
 // Set this to your repo URL (e.g. "https://github.com/you/rc-compare") to enable the edit link in the footer.
 const REPO_URL = "https://github.com/fahlman/RC-Car-Compare";
+// Your Amazon Associates tracking ID (e.g. "yourtag-20"). While it's empty, the Amazon column and
+// the Associates disclosure stay hidden. Setting it turns both on; Amazon requires the disclosure.
+const AMAZON_TAG = "";
 
 const COLUMNS = [
   { key:"brand", label:"Brand", render:c=>`<span class="brand">${esc(c.brand)}</span>` },
@@ -143,6 +147,9 @@ const COLUMNS = [
   { key:"frontRearDiffs", label:"Axle diffs", render:c=> c.frontRearDiffs ? esc(c.frontRearDiffs) : unk() },
   { key:"completion", label:"Build", hidden:true },
   { key:"priceUsd", label:"Price", num:true, render:c=> c.priceUsd==null ? unk() : "$"+c.priceUsd.toFixed(2) },
+  ...(AMAZON_TAG ? [{ key:"amazon", label:"Amazon", sortVal:c=> c.amazonAsin ? 0 : null, render:c=> c.amazonAsin
+    ? `<a href="https://www.amazon.com/dp/${encodeURIComponent(c.amazonAsin)}?tag=${encodeURIComponent(AMAZON_TAG)}" target="_blank" rel="sponsored noopener">Buy on Amazon</a>`
+    : "—" }] : []),
   { key:"notes", label:"Notes", wrap:true, render:c=>esc(c.notes||"") },
   { key:"source", label:"Source", render:c=> c.source ? `<a href="${esc(c.source)}" target="_blank" rel="noopener">link</a>` : unk() },
   { key:"verified", label:"Verified", hidden:true },
@@ -303,6 +310,7 @@ function clearFilters(){
   $('f-price').value=""; $('f-q').value="";
 }
 
+if (AMAZON_TAG) $('amazonnote').hidden = false;
 if (REPO_URL) $('contrib').innerHTML = `<a href="${esc(REPO_URL)}/edit/main/cars.json">Edit cars.json on GitHub</a> and include a source link — see <a href="${esc(REPO_URL)}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.`;
 
 fetch('cars.json', {cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); }).then(data=>{

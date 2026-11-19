@@ -71,8 +71,8 @@
     "completion": "RTR",
     "priceUsd": 339.99,
     "source": "https://www.horizonhobby.com/product/arrma-1-10-senton-223s-dsc-4x4-rtr-brushless-short-course-truck/ARA4303V4.html",
-    "verified": "2026-11-17",
-    "notes": "Arrma lists a center diff module and all-metal gear differential; Arrma's stock center diff part (ARA311165, steel internal gears) lists the Senton 223S as a fitment. Motor size from Horizon's parts list for the stock motor, SPMX-1081. On backorder at Horizon as of 2026-11-17."
+    "verified": "2026-11-18",
+    "notes": "Arrma lists a center diff module and all-metal gear differential; Arrma's stock center diff part (ARA311165, steel internal gears) lists the Senton 223S as a fitment. Motor size from Horizon's parts list for the stock motor, SPMX-1081. As of 2026-11-18, Horizon has the blue and red versions in stock and the yellow on backorder."
   },
   {
     "brand": "Arrma",
@@ -94,9 +94,9 @@
     "centerDiffGears": "metal",
     "frontRearDiffs": "Metal gear",
     "completion": "RTR",
-    "priceUsd": 369.99,
+    "priceUsd": 339.99,
     "source": "https://www.horizonhobby.com/product/arrma-1-10-vorteks-223s-4x4-rtr-brushless-stadium-truck/ARA4305V4.html",
-    "verified": "2026-11-17",
+    "verified": "2026-11-18",
     "notes": "Arrma lists a center diff module and all-metal gear differential. Motor size from Horizon's parts list for the stock motor, SPMX-1081."
   },
   {
@@ -1019,8 +1019,8 @@
     "completion": "RTR",
     "priceUsd": 259.99,
     "source": "https://www.horizonhobby.com/product/arrma-1-10-gorgon-223s-2wd-rtr-brushless-monster-truck/ARA3530.html",
-    "verified": "2026-11-17",
-    "notes": "Price shown is for the Pink/Black version, which currently includes a promo 2S LiPo and charger. Motor size from Horizon's parts list for the stock motor, SPMXSM5000."
+    "verified": "2026-11-18",
+    "notes": "Motor size from Horizon's parts list for the stock motor, SPMXSM5000."
   },
   {
     "brand": "Arrma",
@@ -1042,10 +1042,10 @@
     "centerDiffGears": null,
     "frontRearDiffs": "",
     "completion": "RTR",
-    "priceUsd": 199.99,
+    "priceUsd": 189.99,
     "source": "https://www.horizonhobby.com/product/arrma-1-10-gorgon-2wd-rtr-brushed-monster-truck-battery-and-charger-included/ARA3230S.html",
-    "verified": "2026-11-17",
-    "notes": "Includes Spektrum Smart NiMH battery and Smart USB charger. Also sold without battery/charger (ARA3230T1, $169.99). Horizon shows it as not available to order as of 2026-11-17."
+    "verified": "2026-11-18",
+    "notes": "Includes Spektrum Smart NiMH battery and Smart USB charger. Horizon shows it as not available to order in any color as of 2026-11-18."
   },
   {
     "brand": "Team Associated",

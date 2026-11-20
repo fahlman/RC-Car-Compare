@@ -1,8 +1,8 @@
 # RC Car Spec Compare
 
-A filterable, sortable table of hobby-grade 1/10-scale ready-to-run off-road RC cars and trucks (2WD and 4WD): Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Every spec comes from the manufacturer's own website.
+A filterable, sortable table of hobby-grade electric ready-to-run off-road RC cars and trucks (2WD and 4WD), from 1/5 scale down to 1/18: Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Every spec comes from the manufacturer's own website.
 
-- Filter by brand, scale, drive, motor, battery (2S/3S/4S), center differential, price, type and platform. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it
+- Filter by brand, scale, drive, motor, battery (LiPo cell count), center differential, price, type and platform. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it
 - Click a header to sort, or Shift+click to sort by more than one column
 - Drag headers to reorder columns. Click the eye in a header to hide that column, or use the eyes in the sidebar to hide or show any column. Your layout is saved in your browser
 

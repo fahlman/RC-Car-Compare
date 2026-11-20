@@ -21,6 +21,9 @@ const ENUMS = {
   centerDiff: ["yes", "no", "optional", "n/a", null],
   centerDiffGears: ["metal", "composite", null],
 };
+// Maker scale names used when the maker gives no fraction (Traxxas's "Mini" and "X-Truck"). Add one here if a maker
+// introduces another, and update the "Scale labels" rule in CONTRIBUTING.md to match.
+const SCALE_NAMES = ["Mini", "X-Truck"];
 const REQUIRED = ["brand", "model", "platform", "scale", "type", "drive", "motor", "completion", "source", "verified"];
 const ALLOWED = new Set([...REQUIRED, "sku", "motorDetail", "motorSize", "motorKv", "minCells", "maxCells", "topSpeedMph", "speedNote",
   "centerDiff", "centerDiffGears", "frontRearDiffs", "priceUsd", "amazonAsin", "notes"]);
@@ -46,7 +49,7 @@ cars.forEach((c, i) => {
   for (const k of Object.keys(c)) if (!ALLOWED.has(k)) errors.push(`${where}: unknown field "${k}" (check spelling).`);
   for (const [k, vals] of Object.entries(ENUMS))
     if (k in c && !vals.includes(c[k])) errors.push(`${where}: "${k}" must be one of ${vals.map(v => JSON.stringify(v)).join(", ")} — got ${JSON.stringify(c[k])}.`);
-  if (c.scale && !/^(1\/\d+|Mini)$/.test(c.scale)) errors.push(`${where}: "scale" should look like "1/10".`);
+  if (c.scale && !(/^1\/\d+$/.test(c.scale) || SCALE_NAMES.includes(c.scale))) errors.push(`${where}: "scale" should be a fraction like "1/10", or one of the maker names ${SCALE_NAMES.map(n => JSON.stringify(n)).join(", ")}.`);
   for (const k of ["minCells", "maxCells"])
     if (c[k] != null && !(Number.isInteger(c[k]) && c[k] >= 1 && c[k] <= 12)) errors.push(`${where}: "${k}" must be a whole number of LiPo cells (e.g. 3), or null.`);
   if (c.minCells != null && c.maxCells != null && c.minCells > c.maxCells) errors.push(`${where}: minCells is larger than maxCells.`);

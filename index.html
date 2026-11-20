@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RC Car Spec Compare — 1/10 RTR</title>
+<title>RC Car Spec Compare — Electric RTR</title>
 <style>
   :root {
     --bg: #f6f7f9; --panel: #fff; --ink: #1b1f24; --muted: #5f6b7a; --line: #dde2e8;
@@ -94,6 +94,7 @@
   th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; white-space:nowrap; }
   .num { text-align:right; font-variant-numeric: tabular-nums; }
   td.wrap { white-space:normal; min-width:240px; max-width:380px; color:var(--muted); font-size:13.5px; }
+  td.name { white-space:normal; min-width:220px; max-width:260px; }   /* long model names wrap, so the first two columns can stay frozen */
   th { position:sticky; top:0; background:var(--panel); font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
        cursor:pointer; user-select:none; z-index:2; }
   th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
@@ -126,7 +127,7 @@
 <body>
 <header>
   <h1>RC Car Spec Compare</h1>
-  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, click a header's eye to hide its column, and use the eyes in the sidebar to show or hide any column.</p>
+  <p>Electric ready-to-run off-road RC cars and trucks, 1/5 scale down to 1/18, from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, click a header's eye to hide its column, and use the eyes in the sidebar to show or hide any column.</p>
 </header>
 <main>
   <div class="toolbar">
@@ -179,17 +180,17 @@ const store = {
 
 const COLUMNS = [
   { key:"brand", label:"Brand", render:c=>`<span class="brand">${esc(c.brand)}</span>` },
-  { key:"model", label:"Model", render:c=>esc(c.model) },
+  { key:"model", label:"Model", cls:"name", render:c=>esc(c.model) },
   { key:"platform", label:"Platform" },
   { key:"sku", label:"SKU", hidden:true },
-  { key:"scale", label:"Scale" },
+  { key:"scale", label:"Scale", sortVal:c=>String(scaleRank(c.scale)).padStart(4,"0")+c.scale },   // same order as the chips
   { key:"type", label:"Type" },
   { key:"drive", label:"Drive" },
   { key:"motor", label:"Motor" },
   { key:"motorSize", label:"Motor size" },
   { key:"motorKv", label:"Kv", num:true },
   { key:"motorDetail", label:"Motor detail", hidden:true },
-  { key:"battery", label:"Battery", sortVal:c=>c.maxCells, render:c=> c.maxCells==null ? unk() : (c.minCells===c.maxCells? `${c.maxCells}S` : `${c.minCells}S–${c.maxCells}S`) + " LiPo" },
+  { key:"battery", label:"Battery", sortVal:c=>c.maxCells, render:c=> c.maxCells==null ? unk() : (c.minCells==null ? `Up to ${c.maxCells}S` : c.minCells===c.maxCells ? `${c.maxCells}S` : `${c.minCells}S–${c.maxCells}S`) + " LiPo" },
   { key:"topSpeedMph", label:"Top speed", num:true, render:c=> c.topSpeedMph==null ? unk() : `<span title="${esc(c.speedNote||'')}">${(c.speedNote||'').includes('+')?'':'~'}${c.topSpeedMph}${(c.speedNote||'').includes('+')?'+':''} mph</span>` },
   { key:"centerDiff", label:"Center diff", sortVal:c=>({yes:3,optional:2,no:1,"n/a":0})[c.centerDiff] ?? null, render:c=>({
       yes:'<span class="yes">Yes</span>', no:'<span class="no">No</span>', optional:'<span class="opt">Optional</span>', "n/a":'<span title="2WD — no center diff">— (2WD)</span>' })[c.centerDiff] || unk() },
@@ -236,18 +237,21 @@ function visibleCols(){ return layout.order.filter(k=>!layout.hidden.includes(k)
 // combine with "or"; the groups combine with "and". The price group is a number box instead of chips.
 
 const field = k => ({ values: cs=>uniq(cs.map(c=>c[k])), match:(c,v)=>c[k]===v });
-const scaleDen = s => /^1\/\d+$/.test(s) ? +s.slice(2) : Infinity;
+// Fractions sort biggest first (1/5, 1/8, 1/10 …); maker names without a fraction ("Mini", "X-Truck") go last.
+const scaleRank = s => /^1\/\d+$/.test(s) ? +s.slice(2) : 1000;
+const byScale = (a,b) => scaleRank(a)-scaleRank(b) || a.localeCompare(b);
 const CENTER = { yes:"Yes (stock)", metal:"Yes, metal gears", optional:"Optional upgrade", no:"No (incl. 2WD)" };
 const GROUPS = [
   { id:"brand",    label:"Brand",    col:"brand",    ...field("brand") },
-  // Biggest first: 1/5, 1/8, 1/10 … then "Mini".
-  { id:"scale",    label:"Scale",    col:"scale",    ...field("scale"), values: cs=>uniq(cs.map(c=>c.scale)).sort((a,b)=>scaleDen(a)-scaleDen(b)) },
+  { id:"scale",    label:"Scale",    col:"scale",    ...field("scale"), values: cs=>uniq(cs.map(c=>c.scale)).sort(byScale) },
   { id:"drive",    label:"Drive",    col:"drive",    ...field("drive"), values: ()=>["4WD","2WD"] },
   { id:"motor",    label:"Motor",    col:"motor",    ...field("motor"), values: ()=>["Brushless","Brushed"] },
   { id:"cells",    label:"Runs on",  col:"battery",
-    values: cs=>{ const lo = Math.min(...cs.map(c=>c.minCells??Infinity)), hi = Math.max(...cs.map(c=>c.maxCells??-Infinity));
-                  return Array.from({length:Math.max(0,hi-lo+1)}, (_,i)=>String(lo+i)); },
-    text: v=>v+"S LiPo", match:(c,v)=>c.minCells<=+v && +v<=c.maxCells },
+    // Chips only for counts some car lists as its low or high end. The 8S trucks take two packs, so they list 4S, 6S
+    // and 8S but not 5S or 7S; a chip still matches every car whose range covers it.
+    values: cs=>[...new Set(cs.flatMap(c=>[c.minCells, c.maxCells]).filter(n=>n!=null))].sort((a,b)=>a-b).map(String),
+    // With no stated low end, a car matches only the one count the maker names.
+    text: v=>v+"S LiPo", match:(c,v)=>c.maxCells!=null && (c.minCells ?? c.maxCells)<=+v && +v<=c.maxCells },
   { id:"center",   label:"Center diff", col:"centerDiff", values: ()=>Object.keys(CENTER), text: v=>CENTER[v],
     match:(c,v)=> v==="metal" ? c.centerDiff==="yes" && c.centerDiffGears==="metal"
                : v==="no"    ? c.centerDiff==="no" || c.centerDiff==="n/a"
@@ -363,7 +367,7 @@ function toggleCol(key){
 
 // ---------- Table ----------
 
-const cellClass = (col, i) => { const c = [col.num&&"num", col.wrap&&"wrap", i<2&&"c"+i].filter(Boolean).join(" "); return c ? ` class="${c}"` : ""; };
+const cellClass = (col, i) => { const c = [col.num&&"num", col.wrap&&"wrap", col.cls, i<2&&"c"+i].filter(Boolean).join(" "); return c ? ` class="${c}"` : ""; };
 const SORT_HINT = "Click to sort · Shift+click to add a sort · Drag to move";
 
 function renderHead(){

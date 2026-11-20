@@ -12,8 +12,9 @@ Use judgment rather than the full process. It's fine to commit straight to
 
 ## Purpose
 
-A static web page with a filterable, sortable table of hobby-grade 1/10-scale
-ready-to-run off-road RC cars and trucks (2WD and 4WD). Every spec comes from
+A static web page with a filterable, sortable table of hobby-grade electric
+ready-to-run off-road RC cars and trucks (2WD and 4WD), from 1/5 scale down to
+1/18. Every spec comes from
 the manufacturer's own website. Outside contributors update the data through
 pull requests. Scope and data rules for contributors are in
 [CONTRIBUTING.md](CONTRIBUTING.md).

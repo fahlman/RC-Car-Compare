@@ -21,29 +21,33 @@
   header p { margin:0; color:var(--muted); }
   main { padding: 12px 24px 40px; }
   .content { min-width:0; }
-  /* On wider screens the filters sit in a left sidebar that stays in view and scrolls on its own.
-     "Hide sidebar" (main.nofilters) gives the table the full width. On phones they stack under the toolbar. */
-  @media (min-width: 761px) {
-    main { display:grid; grid-template-columns: 250px minmax(0,1fr); grid-template-rows:auto 1fr;
-           grid-template-areas: "side bar" "side content"; column-gap:18px; align-items:start; }
-    main.nofilters { grid-template-columns: minmax(0,1fr); grid-template-areas: "bar" "content"; }
-    main > .toolbar { grid-area:bar; } .sidebar { grid-area:side; } .content { grid-area:content; }
-    .panel.sidebar { position:sticky; top:12px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; margin-bottom:0; }
-    .sidebar .filters { flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:16px; }
-    .sidebar .chips { flex-direction:column; gap:1px; }
-    .sidebar .chips button { border-color:transparent; border-radius:6px; padding:3px 6px; text-align:left; }
-    .sidebar .chips button:hover { background:var(--accent-soft); }
-    .sidebar input[type=number] { width:100%; box-sizing:border-box; }
+  a { color:var(--accent); }
+  .hint { color:var(--muted); font-size:12.5px; }
+  footer { color:var(--muted); font-size:13px; padding: 0 24px 30px; }
+
+  input[type=number], input[type=search] {
+    font: inherit; padding:6px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--ink);
   }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; }
+  input[type=number] { width: 110px; }
+  input[type=search] { width: 240px; max-width:100%; }
+  button { font: inherit; padding:6px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; }
+  button:hover { border-color: var(--accent); }
+
+  /* The bar above the table. */
+  .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 4px 0 10px; }
+  .count { color:var(--muted); margin-right:auto; }
+
+  /* The sidebar: filter groups, then "More columns". On phones it stacks under the toolbar;
+     on wider screens it moves to the left (see the @media block below). */
+  .sidebar { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; }
   .filters { display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-start; }
-  /* Each sidebar group folds open and shut from its heading; the badge counts the choices turned on in it. */
+  /* Each group folds open and shut from its heading; the badge counts the choices turned on in it. */
   .f { font-size:13px; }
   .f > summary { cursor:pointer; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
   .f[open] > summary { margin-bottom:5px; }
   .f > summary .on { margin-left:6px; padding:0 6px; border-radius:999px; background:var(--accent); color:var(--panel); font-size:10px; letter-spacing:0; }
+  /* Filter chips cycle on each click: off → shown (only these) → hidden → off (see GROUPS). */
   .chips { display:flex; gap:6px; flex-wrap:wrap; }
-  /* Filter chips cycle on each click: off → shown (only these) → hidden → off (see CHIP_FILTERS). */
   .chips button { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; user-select:none; }
   .chips .box { width:14px; height:14px; border:1.5px solid var(--muted); border-radius:3px; display:grid; place-items:center; font-size:11px; line-height:1; }
   .chips [data-state="in"] { border-color:var(--accent); }
@@ -53,18 +57,8 @@
   .chips [data-state="out"] .name { text-decoration:line-through; }
   .chips [data-state="out"] .box { border-color:var(--no); color:var(--no); }
   .chips [data-state="out"] .box::after { content:"✕"; }
-  select, input[type=number], input[type=search] {
-    font: inherit; padding:6px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--ink);
-  }
-  input[type=number] { width: 110px; }
-  input[type=search] { width: 240px; max-width:100%; box-sizing:border-box; }
-  button { font: inherit; padding:6px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; }
-  button:hover { border-color: var(--accent); }
-  .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 4px 0 10px; }
-  .count { color:var(--muted); margin-right:auto; }
-  .hint { color:var(--muted); font-size:12.5px; }
-
-  /* The eye beside a group's heading (or a "More columns" row) shows or hides that table column. */
+  /* An eye shows or hides a table column: beside each group's heading, on each "More columns" row,
+     and in the headers of columns that have a group. */
   .grp { display:flex; align-items:flex-start; gap:4px; }
   .grp > details { flex:1; min-width:0; }
   .grp > .eye { margin-top:-4px; }
@@ -77,17 +71,29 @@
   .colrow span { flex:1; }
   .colrow.off span { color:var(--muted); }
 
+  /* Wider screens: the sidebar sits on the left, stays in view and scrolls on its own.
+     "Hide sidebar" (main.nosidebar) gives the table the full width. */
+  @media (min-width: 761px) {
+    main { display:grid; grid-template-columns: 250px minmax(0,1fr); grid-template-rows:auto 1fr;
+           grid-template-areas: "side bar" "side content"; column-gap:18px; align-items:start; }
+    main.nosidebar { grid-template-columns: minmax(0,1fr); grid-template-areas: "bar" "content"; }
+    main > .toolbar { grid-area:bar; }
+    .content { grid-area:content; }
+    .sidebar { grid-area:side; position:sticky; top:12px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; margin-bottom:0; }
+    .sidebar .filters { flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:16px; }
+    .sidebar .chips { flex-direction:column; gap:1px; }
+    .sidebar .chips button { border-color:transparent; border-radius:6px; padding:3px 6px; text-align:left; }
+    .sidebar .chips button:hover { background:var(--accent-soft); }
+    .sidebar input[type=number] { width:100%; }
+  }
+
   /* The table scrolls inside its own box, no taller than the window, so the sticky header row stays in view. */
   .tablewrap { overflow:auto; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px);
                border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); }
   table { border-collapse:separate; border-spacing:0; width:100%; min-width:900px; }
   th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; white-space:nowrap; }
+  .num { text-align:right; font-variant-numeric: tabular-nums; }
   td.wrap { white-space:normal; min-width:240px; max-width:380px; color:var(--muted); font-size:13.5px; }
-  /* Notes show two lines with "…"; clicking a cut-off note shows all of it (see markNotes). */
-  .note { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
-  .note.open { display:block; -webkit-line-clamp:unset; line-clamp:none; }
-  .note.more { cursor:pointer; }
-  .note.more:hover, .note.more:focus-visible { color:var(--ink); }
   th { position:sticky; top:0; background:var(--panel); font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
        cursor:pointer; user-select:none; z-index:2; }
   th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
@@ -96,7 +102,6 @@
   th .arrow.idle { color:var(--muted); opacity:.75; font-size:13px; }
   th:hover .arrow.idle { opacity:1; }
   th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
-  /* A header's eye hides that column (only columns with a filter group have one; the sidebar's eyes bring columns back). */
   th .eye { margin:-3px 0 -3px 6px; padding:2px; vertical-align:middle; opacity:.55; }
   th .eye svg { width:14px; height:14px; }
   th:hover .eye, th .eye:focus-visible { opacity:1; }
@@ -107,13 +112,15 @@
   table.frozen td.c0, table.frozen td.c1 { background:var(--panel); z-index:1; }
   table.frozen th.c0, table.frozen th.c1 { z-index:3; }
   tbody tr:hover td { background:var(--accent-soft); }
-  td.num { text-align:right; font-variant-numeric: tabular-nums; }
+  /* Notes show two lines with "…"; clicking a cut-off note shows all of it (see markNotes). */
+  .note { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+  .note.open { display:block; -webkit-line-clamp:unset; line-clamp:none; }
+  .note.more { cursor:pointer; }
+  .note.more:hover, .note.more:focus-visible { color:var(--ink); }
   .unk { color:var(--muted); cursor:help; border-bottom:1px dotted var(--muted); }
   .yes { color:var(--yes); font-weight:600; } .no { color:var(--no); } .opt { color:var(--maybe); }
   .brand { font-weight:600; }
-  a { color:var(--accent); }
   .empty { padding:30px; text-align:center; color:var(--muted); }
-  footer { color:var(--muted); font-size:13px; padding: 0 24px 30px; }
 </style>
 </head>
 <body>
@@ -123,23 +130,13 @@
 </header>
 <main>
   <div class="toolbar">
-    <button id="filterbtn" aria-controls="sidebar" aria-expanded="true">Hide sidebar</button>
+    <button id="sidebarbtn" aria-controls="sidebar" aria-expanded="true">Hide sidebar</button>
     <input type="search" id="f-q" placeholder="Search model, SKU, notes…" aria-label="Search">
     <span class="count" id="count"></span>
     <button id="clear">Clear filters</button>
   </div>
-  <aside class="panel sidebar" id="sidebar" aria-label="Filters and columns">
-    <div class="filters" id="filters">
-      <div class="grp"><details class="f" data-group="brand" open><summary>Brand<span class="on" hidden></span></summary><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></details><button type="button" class="eye" data-col="brand"></button></div>
-      <div class="grp"><details class="f" data-group="scale" open><summary>Scale<span class="on" hidden></span></summary><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></details><button type="button" class="eye" data-col="scale"></button></div>
-      <div class="grp"><details class="f" data-group="drive" open><summary>Drive<span class="on" hidden></span></summary><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></details><button type="button" class="eye" data-col="drive"></button></div>
-      <div class="grp"><details class="f" data-group="motor" open><summary>Motor<span class="on" hidden></span></summary><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></details><button type="button" class="eye" data-col="motor"></button></div>
-      <div class="grp"><details class="f" data-group="cells" open><summary>Runs on<span class="on" hidden></span></summary><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></details><button type="button" class="eye" data-col="battery"></button></div>
-      <div class="grp"><details class="f" data-group="center" open><summary>Center diff<span class="on" hidden></span></summary><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></details><button type="button" class="eye" data-col="centerDiff"></button></div>
-      <div class="grp"><details class="f" data-group="price" open><summary>Max price (USD)<span class="on" hidden></span></summary><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></details><button type="button" class="eye" data-col="priceUsd"></button></div>
-      <div class="grp"><details class="f" data-group="type" open><summary>Type<span class="on" hidden></span></summary><div class="chips" id="f-type" role="group" aria-label="Type"></div></details><button type="button" class="eye" data-col="type"></button></div>
-      <div class="grp"><details class="f" data-group="platform" open><summary>Platform<span class="on" hidden></span></summary><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></details><button type="button" class="eye" data-col="platform"></button></div>
-    </div>
+  <aside class="sidebar" id="sidebar" aria-label="Filters and columns">
+    <div class="filters" id="filters"></div>
     <details class="f morecols" data-group="morecols" open>
       <summary>More columns</summary>
       <div id="collist"></div>
@@ -149,11 +146,11 @@
 
   <div class="content">
   <p class="hint" id="amazonnote" hidden>As an Amazon Associate I earn from qualifying purchases. Amazon's price may differ from the maker's price shown here.</p>
-  <div class="tablewrap"><table><thead><tr id="headrow"></tr></thead><tbody id="body"></tbody></table></div>
+  <div class="tablewrap"><table id="table"><thead><tr id="headrow"></tr></thead><tbody id="rows"></tbody></table></div>
   <p class="hint">“?” means not verified yet. Speeds are the maker's claims and often assume optional gearing. All data comes from the manufacturers' own websites; prices are their regular US list prices on the date shown.</p>
   </div>
 </main>
-<footer id="footer">
+<footer>
   Data lives in <code>cars.json</code>. Spot an error or a missing model? <span id="contrib">Open a pull request with a source link.</span>
 </footer>
 
@@ -163,6 +160,22 @@ const REPO_URL = "https://github.com/fahlman/RC-Car-Compare";
 // Your Amazon Associates tracking ID (e.g. "yourtag-20"). While it's empty, the Amazon column and
 // the Associates disclosure stay hidden. Setting it turns both on; Amazon requires the disclosure.
 const AMAZON_TAG = "";
+
+// ---------- Helpers ----------
+
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s??"").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]); }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function unk(){ return '<span class="unk" title="Not verified yet — PRs welcome">?</span>'; }
+const uniq = a => [...new Set(a.filter(v=>v!=null))].sort((x,y)=>String(x).localeCompare(String(y)));
+
+// Settings saved in this browser only. Storage can be missing or blocked (private windows), so failures fall back quietly.
+const store = {
+  get(key, fallback){ try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); } catch(e) { return fallback; } },
+  set(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {} },
+};
+
+// ---------- Columns ----------
 
 const COLUMNS = [
   { key:"brand", label:"Brand", render:c=>`<span class="brand">${esc(c.brand)}</span>` },
@@ -192,16 +205,13 @@ const COLUMNS = [
   { key:"verified", label:"Verified", hidden:true },
 ];
 const COLMAP = Object.fromEntries(COLUMNS.map(c=>[c.key,c]));
-const STORE_KEY = "rc-compare-layout-v1";
 
-function esc(s){ return String(s??"").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[ch]); }
-function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-function unk(){ return '<span class="unk" title="Not verified yet — PRs welcome">?</span>'; }
-
+// Column order, hidden columns and sort order, saved in this browser.
+const LAYOUT_KEY = "rc-compare-layout-v1";
 function defaultLayout(){ return { order: COLUMNS.map(c=>c.key), hidden: COLUMNS.filter(c=>c.hidden).map(c=>c.key), sort: [{key:"priceUsd", dir:1}] }; }
 function loadLayout(){
   try {
-    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    const s = store.get(LAYOUT_KEY, null);
     if (s && Array.isArray(s.order)) {
       // Keep only known columns, and put any column added since the layout was saved
       // right after the column it follows by default, so it lands where it belongs.
@@ -211,51 +221,93 @@ function loadLayout(){
         const prev = COLUMNS.slice(0,i).reverse().find(p=>order.includes(p.key));
         order.splice(prev ? order.indexOf(prev.key)+1 : 0, 0, c.key);
       });
-      s.order = order;
-      s.hidden = (s.hidden||[]).filter(k=>COLMAP[k]); s.sort = (s.sort||[]).filter(x=>COLMAP[x.key]);
-      return s;
+      return { order, hidden: (s.hidden||[]).filter(k=>COLMAP[k]), sort: (s.sort||[]).filter(x=>COLMAP[x.key]) };
     }
   } catch(e) {}
   return defaultLayout();
 }
-function saveLayout(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(layout)); } catch(e) {} }
 
 let cars = [], layout = loadLayout();
-const $ = id => document.getElementById(id);
-
 function visibleCols(){ return layout.order.filter(k=>!layout.hidden.includes(k)).map(k=>COLMAP[k]); }
-function sortValue(col, c){ return col.sortVal ? col.sortVal(c) : c[col.key]; }
 
-// Chip filters. A click cycles a chip: show only matching cars, then hide them, then clear it.
-// Shown chips in one group combine with "or"; the groups combine with "and".
-const uniq = a => [...new Set(a.filter(v=>v!=null))].sort((x,y)=>String(x).localeCompare(String(y)));
-const scaleDen = s => /^1\/(\d+)$/.test(s) ? +s.slice(2) : Infinity;
+// ---------- Filter groups ----------
+// Each group is a heading in the sidebar with an eye for its table column (col). Chip groups list values;
+// a click cycles a chip: show only matching cars, then hide them, then clear it. Shown chips in one group
+// combine with "or"; the groups combine with "and". The price group is a number box instead of chips.
+
+const field = k => ({ values: cs=>uniq(cs.map(c=>c[k])), match:(c,v)=>c[k]===v });
+const scaleDen = s => /^1\/\d+$/.test(s) ? +s.slice(2) : Infinity;
 const CENTER = { yes:"Yes (stock)", metal:"Yes, metal gears", optional:"Optional upgrade", no:"No (incl. 2WD)" };
-const CHIP_FILTERS = [
-  { id:"brand",    values: cs=>uniq(cs.map(c=>c.brand)),    match:(c,v)=>c.brand===v },
+const GROUPS = [
+  { id:"brand",    label:"Brand",    col:"brand",    ...field("brand") },
   // Biggest first: 1/5, 1/8, 1/10 … then "Mini".
-  { id:"scale",    values: cs=>uniq(cs.map(c=>c.scale)).sort((a,b)=>scaleDen(a)-scaleDen(b)), match:(c,v)=>c.scale===v },
-  { id:"drive",    values: ()=>["4WD","2WD"],               match:(c,v)=>c.drive===v },
-  { id:"motor",    values: ()=>["Brushless","Brushed"],     match:(c,v)=>c.motor===v },
-  { id:"cells",    values: cs=>{ const lo=Math.min(...cs.map(c=>c.minCells??Infinity)), hi=Math.max(...cs.map(c=>c.maxCells??-Infinity));
-                                 return Array.from({length:Math.max(0,hi-lo+1)}, (_,i)=>String(lo+i)); },
-                   text: v=>v+"S LiPo",                     match:(c,v)=>c.minCells<=+v && +v<=c.maxCells },
-  { id:"center",   values: ()=>Object.keys(CENTER), text: v=>CENTER[v],
-                   match:(c,v)=> v==="metal" ? c.centerDiff==="yes" && c.centerDiffGears==="metal"
-                              : v==="no"    ? c.centerDiff==="no" || c.centerDiff==="n/a"
-                              : c.centerDiff===v },
-  { id:"type",     values: cs=>uniq(cs.map(c=>c.type)),     match:(c,v)=>c.type===v },
-  { id:"platform", values: cs=>uniq(cs.map(c=>c.platform)), match:(c,v)=>c.platform===v },
+  { id:"scale",    label:"Scale",    col:"scale",    ...field("scale"), values: cs=>uniq(cs.map(c=>c.scale)).sort((a,b)=>scaleDen(a)-scaleDen(b)) },
+  { id:"drive",    label:"Drive",    col:"drive",    ...field("drive"), values: ()=>["4WD","2WD"] },
+  { id:"motor",    label:"Motor",    col:"motor",    ...field("motor"), values: ()=>["Brushless","Brushed"] },
+  { id:"cells",    label:"Runs on",  col:"battery",
+    values: cs=>{ const lo = Math.min(...cs.map(c=>c.minCells??Infinity)), hi = Math.max(...cs.map(c=>c.maxCells??-Infinity));
+                  return Array.from({length:Math.max(0,hi-lo+1)}, (_,i)=>String(lo+i)); },
+    text: v=>v+"S LiPo", match:(c,v)=>c.minCells<=+v && +v<=c.maxCells },
+  { id:"center",   label:"Center diff", col:"centerDiff", values: ()=>Object.keys(CENTER), text: v=>CENTER[v],
+    match:(c,v)=> v==="metal" ? c.centerDiff==="yes" && c.centerDiffGears==="metal"
+               : v==="no"    ? c.centerDiff==="no" || c.centerDiff==="n/a"
+               : c.centerDiff===v },
+  { id:"price",    label:"Max price (USD)", col:"priceUsd" },
+  { id:"type",     label:"Type",     col:"type",     ...field("type") },
+  { id:"platform", label:"Platform", col:"platform", ...field("platform") },
 ];
+const CHIP_GROUPS = GROUPS.filter(g=>g.values);
+const GROUPED = new Set(GROUPS.map(g=>g.col));   // columns that have a group (and so a header eye)
+const NEXT_STATE = { off:"in", in:"out", out:"off" };
+
+function buildSidebar(){
+  $('filters').innerHTML = GROUPS.map(g=>{
+    const body = g.values
+      ? `<div class="chips" id="f-${g.id}" role="group" aria-label="${esc(g.label)}">${g.values(cars).map(v=>{
+          const text = esc(g.text ? g.text(v) : v);
+          return `<button type="button" data-value="${esc(v)}" data-text="${text}" data-state="off"><span class="box" aria-hidden="true"></span><span class="name">${text}</span></button>`;
+        }).join("")}</div>`
+      : `<input type="number" id="f-${g.id}" min="0" step="10" placeholder="No limit" aria-label="${esc(g.label)}">`;
+    return `<div class="grp"><details class="f" data-group="${g.id}" open><summary>${esc(g.label)}<span class="on" hidden></span></summary>${body}</details>${eyeButton(g.col)}</div>`;
+  }).join("");
+  document.querySelectorAll('.chips button').forEach(labelChip);
+  restoreFolds();
+}
+function labelChip(btn){
+  const t = btn.dataset.text, s = btn.dataset.state, group = btn.parentElement.getAttribute('aria-label');
+  btn.setAttribute('aria-pressed', String(s==="in"));
+  btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
+  btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
+}
+function clearFilters(){
+  document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state = "off"; labelChip(b); });
+  $('f-price').value = ""; $('f-q').value = "";
+}
+// How many choices are on in a group (a price counts as one).
+function groupCount(g){
+  const el = $('f-'+g.id);
+  return !el ? 0 : g.values ? el.querySelectorAll('button:not([data-state="off"])').length : (el.value ? 1 : 0);
+}
+// The badge on each group's heading, and the total on the sidebar button while the sidebar is hidden.
+function labelCounts(){
+  let total = 0;
+  GROUPS.forEach(g=>{
+    const n = groupCount(g), badge = $('f-'+g.id)?.closest('details').querySelector('.on');
+    total += n;
+    if (badge) { badge.textContent = n || ""; badge.hidden = !n; }
+  });
+  $('sidebarbtn').textContent = !$('sidebar').hidden ? "Hide sidebar"
+    : total ? `Show sidebar (${total} filter${total>1?"s":""} on)` : "Show sidebar";
+}
 
 function filtered(){
-  const chips = CHIP_FILTERS.map(f=>{
-    const btns = [...$('f-'+f.id).children], pick = s => btns.filter(b=>b.dataset.state===s).map(b=>b.dataset.value);
-    return { match:f.match, shown:pick("in"), hidden:pick("out") };
+  const tests = CHIP_GROUPS.map(g=>{
+    const btns = [...$('f-'+g.id).children], pick = s => btns.filter(b=>b.dataset.state===s).map(b=>b.dataset.value);
+    return { match:g.match, shown:pick("in"), hidden:pick("out") };
   });
   const maxPrice = parseFloat($('f-price').value), q = $('f-q').value.trim().toLowerCase();
   return cars.filter(c=>{
-    for (const {match, shown, hidden} of chips){
+    for (const {match, shown, hidden} of tests){
       if (shown.length && !shown.some(v=>match(c,v))) return false;
       if (hidden.some(v=>match(c,v))) return false;
     }
@@ -266,10 +318,10 @@ function filtered(){
 }
 
 function sorted(rows){
-  const keys = layout.sort;
+  const sortVal = (col, c) => col.sortVal ? col.sortVal(c) : c[col.key];
   return rows.slice().sort((a,b)=>{
-    for (const {key,dir} of keys){
-      const col = COLMAP[key], va = sortValue(col,a), vb = sortValue(col,b);
+    for (const {key,dir} of layout.sort){
+      const col = COLMAP[key], va = sortVal(col,a), vb = sortVal(col,b);
       const na = va==null||va==="", nb = vb==null||vb==="";
       if (na&&nb) continue; if (na) return 1; if (nb) return -1;   // unknowns always last
       const r = (typeof va==="number" && typeof vb==="number") ? va-vb : String(va).localeCompare(String(vb), undefined, {numeric:true});
@@ -279,45 +331,93 @@ function sorted(rows){
   });
 }
 
-function renderHead(){
-  const tr = $('headrow'); tr.innerHTML = "";
-  visibleCols().forEach((col,i)=>{
-    const th = document.createElement('th');
-    if (i<2) th.className = "c"+i;
-    const si = layout.sort.findIndex(s=>s.key===col.key);
-    th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}`
-                                           : `<span class="arrow idle" aria-hidden="true">↕</span>`);
-    if (si>=0) th.setAttribute('aria-sort', layout.sort[si].dir>0 ? "ascending" : "descending");
-    // Only columns with a filter group in the sidebar get a header eye; the last visible column can't be hidden.
-    if (GROUPED.has(col.key) && visibleCols().length > 1) {
-      const eye = document.createElement('button');
-      eye.type = "button"; eye.className = "eye"; eye.innerHTML = EYE;
-      eye.title = `Hide the ${col.label} column`; eye.setAttribute('aria-label', eye.title);
-      eye.addEventListener('click', e=>{ e.stopPropagation(); toggleCol(col.key); });
-      th.appendChild(eye);
-    }
-    th.draggable = true; th.dataset.key = col.key; th.title = "Click to sort · Shift+click to add a sort · Drag to move";
-    if (col.num) th.style.textAlign = "right";
-    th.addEventListener('click', e=>onSort(col.key, e.shiftKey));
-    th.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', col.key); e.dataTransfer.effectAllowed='move'; });
-    th.addEventListener('dragover', e=>{ e.preventDefault(); th.classList.add('dragover'); });
-    th.addEventListener('dragleave', ()=>th.classList.remove('dragover'));
-    th.addEventListener('drop', e=>{ e.preventDefault(); th.classList.remove('dragover'); moveCol(e.dataTransfer.getData('text/plain'), col.key); });
-    tr.appendChild(th);
+// ---------- Eyes (show or hide columns) ----------
+// Filter groups carry the eye for their own column; every other column gets a row under
+// "More columns", in the table's current order. Headers of grouped columns get one too.
+
+const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+const eyeButton = key => `<button type="button" class="eye" data-col="${esc(key)}"></button>`;
+// Draw each eye under root as open or slashed, to match whether its column is showing.
+function paintEyes(root){
+  root.querySelectorAll('.eye').forEach(b=>{
+    const key = b.dataset.col, shown = !layout.hidden.includes(key);
+    b.innerHTML = shown ? EYE : EYE_OFF;
+    b.classList.toggle('off', !shown);
+    b.closest('.colrow')?.classList.toggle('off', !shown);
+    b.title = `${shown ? "Hide" : "Show"} the ${COLMAP[key].label} column`;
+    b.setAttribute('aria-label', b.title);
   });
+}
+function renderSidebarEyes(){
+  $('collist').innerHTML = layout.order.filter(k=>!GROUPED.has(k))
+    .map(k=>`<div class="colrow"><span>${esc(COLMAP[k].label)}</span>${eyeButton(k)}</div>`).join("");
+  paintEyes($('sidebar'));
+}
+function toggleCol(key){
+  const hiding = !layout.hidden.includes(key);
+  if (hiding && visibleCols().length <= 1) return;   // keep at least one column
+  layout.hidden = hiding ? layout.hidden.concat(key) : layout.hidden.filter(k=>k!==key);
+  refresh();
+}
+
+// ---------- Table ----------
+
+const cellClass = (col, i) => { const c = [col.num&&"num", col.wrap&&"wrap", i<2&&"c"+i].filter(Boolean).join(" "); return c ? ` class="${c}"` : ""; };
+const SORT_HINT = "Click to sort · Shift+click to add a sort · Drag to move";
+
+function renderHead(){
+  const cols = visibleCols(), ranked = layout.sort.length > 1;
+  $('headrow').innerHTML = cols.map((col,i)=>{
+    const si = layout.sort.findIndex(s=>s.key===col.key), s = layout.sort[si];
+    const arrow = s ? `<span class="arrow">${s.dir>0?"▲":"▼"}</span>${ranked?`<span class="rank">${si+1}</span>`:""}`
+                    : `<span class="arrow idle" aria-hidden="true">↕</span>`;
+    // Only columns with a filter group get a header eye, and the last visible column can't be hidden.
+    const eye = GROUPED.has(col.key) && cols.length > 1 ? eyeButton(col.key) : "";
+    const sortAttr = s ? ` aria-sort="${s.dir>0?"ascending":"descending"}"` : "";
+    return `<th data-key="${col.key}" draggable="true" title="${SORT_HINT}"${cellClass(col,i)}${sortAttr}>${esc(col.label)}${arrow}${eye}</th>`;
+  }).join("");
+  paintEyes($('headrow'));
 }
 
 function renderBody(){
-  const rows = sorted(filtered()), cols = visibleCols(), tb = $('body');
+  const rows = sorted(filtered()), cols = visibleCols();
   $('count').textContent = `${rows.length} of ${cars.length} models`;
   labelCounts();
-  if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; updateFreeze(); return; }
-  tb.innerHTML = rows.map(c=>"<tr>"+cols.map((col,i)=>{
-    const cls = [col.num?"num":"", col.wrap?"wrap":"", i<2?"c"+i:""].join(" ").trim();
-    const html = col.render ? col.render(c) : (c[col.key]==null||c[col.key]==="" ? unk() : esc(c[col.key]));
-    return `<td${cls?` class="${cls}"`:""}>${html}</td>`;
-  }).join("")+"</tr>").join("");
-  updateFreeze(); markNotes();
+  const cell = (col, c) => col.render ? col.render(c) : (c[col.key]==null||c[col.key]==="" ? unk() : esc(c[col.key]));
+  $('rows').innerHTML = rows.length
+    ? rows.map(c=>`<tr>${cols.map((col,i)=>`<td${cellClass(col,i)}>${cell(col,c)}</td>`).join("")}</tr>`).join("")
+    : `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`;
+  relayout();
+}
+
+function refresh(){ store.set(LAYOUT_KEY, layout); renderHead(); renderBody(); renderSidebarEyes(); }
+
+function moveCol(from, to){
+  if (!from || from===to || !COLMAP[from]) return;
+  const o = layout.order.filter(k=>k!==from); o.splice(o.indexOf(to), 0, from); layout.order = o; refresh();
+}
+function onSort(key, add){
+  const cur = layout.sort.find(s=>s.key===key);
+  if (add){
+    if (cur) cur.dir *= -1; else layout.sort.push({key, dir:1});
+  } else {
+    layout.sort = [{key, dir: cur && layout.sort.length===1 ? -cur.dir : 1}];
+  }
+  refresh();
+}
+
+// Things that depend on the table's width: frozen columns and which notes are cut off.
+function relayout(){ updateFreeze(); markNotes(); }
+
+// Freeze the first two visible columns, unless together they'd take more than half
+// of the table's visible width (as on a phone), where freezing would leave no room to scroll.
+function updateFreeze(){
+  const table = $('table'), ths = $('headrow').children;
+  if (ths.length < 2) { table.classList.remove('frozen'); return; }
+  const w0 = ths[0].offsetWidth, w1 = ths[1].offsetWidth;
+  table.style.setProperty('--c1-left', w0 + "px");
+  table.classList.toggle('frozen', w0 + w1 <= table.parentElement.clientWidth / 2);
 }
 
 // Mark the notes that the two-line limit cuts off, so only those can be clicked open.
@@ -334,129 +434,82 @@ function toggleNote(n){
   n.setAttribute('aria-expanded', String(open));
   n.title = open ? "Click to show less" : "Click to show the whole note";
 }
-$('body').addEventListener('click', e=>{ const n = e.target.closest('.note.more'); if (n) toggleNote(n); });
-$('body').addEventListener('keydown', e=>{
-  const n = e.target.closest('.note.more');
-  if (n && (e.key==="Enter" || e.key===" ")) { e.preventDefault(); toggleNote(n); }
-});
 
-// Freeze the first two visible columns, unless together they'd take more than half
-// of the table's visible width (as on a phone), where freezing would leave no room to scroll.
-function updateFreeze(){
-  const table = $('headrow').closest('table'), wrap = table.parentElement, ths = $('headrow').children;
-  if (ths.length < 2) { table.classList.remove('frozen'); return; }
-  const w0 = ths[0].offsetWidth, w1 = ths[1].offsetWidth;
-  table.style.setProperty('--c1-left', w0 + "px");
-  table.classList.toggle('frozen', w0 + w1 <= wrap.clientWidth / 2);
-}
-window.addEventListener('resize', ()=>{ updateFreeze(); markNotes(); });
+// ---------- Sidebar: show/hide and folded groups, remembered in this browser ----------
 
-// Eyes in the sidebar show or hide table columns. Filter groups carry the eye for their own column;
-// every other column gets a row under "More columns", in the table's current order.
-const GROUP_COL = { brand:"brand", scale:"scale", drive:"drive", motor:"motor", cells:"battery", center:"centerDiff", price:"priceUsd", type:"type", platform:"platform" };
-const GROUPED = new Set(Object.values(GROUP_COL));
-const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-const EYE_OFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-function renderEyes(){
-  $('collist').innerHTML = layout.order.filter(k=>!GROUPED.has(k)).map(k=>
-    `<div class="colrow"><span>${esc(COLMAP[k].label)}</span><button type="button" class="eye" data-col="${esc(k)}"></button></div>`).join("");
-  document.querySelectorAll('#sidebar .eye').forEach(b=>{
-    const col = COLMAP[b.dataset.col], shown = !layout.hidden.includes(b.dataset.col);
-    b.innerHTML = shown ? EYE : EYE_OFF;
-    b.classList.toggle('off', !shown);
-    b.closest('.colrow')?.classList.toggle('off', !shown);
-    b.title = `${shown ? "Hide" : "Show"} the ${col.label} column`;
-    b.setAttribute('aria-label', b.title);
-  });
-}
-function toggleCol(key){
-  const hiding = !layout.hidden.includes(key);
-  if (hiding && visibleCols().length <= 1) return;   // keep at least one column
-  layout.hidden = hiding ? layout.hidden.concat(key) : layout.hidden.filter(k=>k!==key);
-  refresh();
-}
-$('sidebar').addEventListener('click', e=>{
-  const b = e.target.closest('.eye'); if (!b) return;
-  toggleCol(b.dataset.col);
-  document.querySelector(`#sidebar .eye[data-col="${b.dataset.col}"]`)?.focus();
-});
-function moveCol(from, to){
-  if (!from || from===to || !COLMAP[from]) return;
-  const o = layout.order.filter(k=>k!==from); o.splice(o.indexOf(to), 0, from); layout.order = o; refresh();
-}
-function onSort(key, add){
-  const cur = layout.sort.find(s=>s.key===key);
-  if (add){
-    if (cur) cur.dir *= -1; else layout.sort.push({key, dir:1});
-  } else {
-    layout.sort = [{key, dir: cur && layout.sort.length===1 ? -cur.dir : 1}];
-  }
-  refresh();
-}
-function refresh(){ saveLayout(); renderHead(); renderBody(); renderEyes(); }
-
-function setupFilters(){
-  CHIP_FILTERS.forEach(f=>{
-    const box = $('f-'+f.id);
-    box.innerHTML = f.values(cars).map(v=>`<button type="button" data-value="${esc(v)}" data-text="${esc(f.text ? f.text(v) : v)}" data-state="off"><span class="box" aria-hidden="true"></span><span class="name">${esc(f.text ? f.text(v) : v)}</span></button>`).join("");
-    [...box.children].forEach(btn=>{
-      labelChip(btn);
-      btn.addEventListener('click', ()=>{ btn.dataset.state = ({off:"in", in:"out", out:"off"})[btn.dataset.state]; labelChip(btn); renderBody(); });
-    });
-  });
-  $('filters').addEventListener('input', renderBody);
-  $('f-q').addEventListener('input', renderBody);
-  $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
-  $('filterbtn').addEventListener('click', ()=>setFiltersOpen($('sidebar').hidden, true));
-  setupGroups();
-  let saved = null; try { saved = localStorage.getItem(FILTERS_KEY); } catch(e) {}
-  setFiltersOpen(saved ? saved==="open" : !matchMedia('(max-width: 760px)').matches, false);
-  $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
-}
-function labelChip(btn){
-  const t = btn.dataset.text, s = btn.dataset.state, group = btn.parentElement.getAttribute('aria-label');
-  btn.setAttribute('aria-pressed', String(s==="in"));
-  btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
-  btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
-}
-// "Hide sidebar" folds the filters and column eyes away. The choice is remembered in this browser; phones start folded.
-const FILTERS_KEY = "rc-compare-filters";
-function setFiltersOpen(open, remember){
+const SIDEBAR_KEY = "rc-compare-filters", FOLDS_KEY = "rc-compare-groups";
+function setSidebarOpen(open, remember){
   $('sidebar').hidden = !open;
-  document.querySelector('main').classList.toggle('nofilters', !open);
-  $('filterbtn').setAttribute('aria-expanded', String(open));
-  labelCounts(); updateFreeze(); markNotes();
-  if (remember) try { localStorage.setItem(FILTERS_KEY, open ? "open" : "closed"); } catch(e) {}
+  document.querySelector('main').classList.toggle('nosidebar', !open);
+  $('sidebarbtn').setAttribute('aria-expanded', String(open));
+  labelCounts(); relayout();
+  if (remember) store.set(SIDEBAR_KEY, open);
 }
-function labelCounts(){
-  document.querySelectorAll('#filters details.f').forEach(d=>{
-    const k = d.querySelectorAll('.chips button:not([data-state="off"])').length + (d.querySelector('#f-price')?.value ? 1 : 0);
-    const on = d.querySelector('summary .on'); on.textContent = k || ""; on.hidden = !k;
-  });
-  const n = document.querySelectorAll('.chips button:not([data-state="off"])').length + ($('f-price').value ? 1 : 0);
-  $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show sidebar (${n} filter${n>1?"s":""} on)` : "Show sidebar") : "Hide sidebar";
-}
-// Which sidebar groups are folded is remembered in this browser; they all start open.
-const GROUPS_KEY = "rc-compare-groups";
-function setupGroups(){
-  let saved = {}; try { saved = JSON.parse(localStorage.getItem(GROUPS_KEY)) || {}; } catch(e) {}
+// Groups start open; any the visitor folded stay folded.
+function restoreFolds(){
+  const folds = store.get(FOLDS_KEY, {}), saved = folds && typeof folds === "object" ? folds : {};
   document.querySelectorAll('#sidebar details[data-group]').forEach(d=>{
     if (typeof saved[d.dataset.group] === "boolean") d.open = saved[d.dataset.group];
-    d.addEventListener('toggle', ()=>{ saved[d.dataset.group] = d.open; try { localStorage.setItem(GROUPS_KEY, JSON.stringify(saved)); } catch(e) {} });
+    d.addEventListener('toggle', ()=>{ saved[d.dataset.group] = d.open; store.set(FOLDS_KEY, saved); });
   });
 }
-function clearFilters(){
-  document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state="off"; labelChip(b); });
-  $('f-price').value=""; $('f-q').value="";
+
+// ---------- Events (wired once the data has loaded) ----------
+
+// A table header element from a drag event, whose target can be a child of the header.
+const headerOf = e => (e.target.nodeType === 1 ? e.target : e.target.parentElement)?.closest('th');
+
+function wireEvents(){
+  $('sidebar').addEventListener('click', e=>{
+    const eye = e.target.closest('.eye'), chip = e.target.closest('.chips button');
+    if (eye) {
+      toggleCol(eye.dataset.col);
+      $('sidebar').querySelector(`.eye[data-col="${eye.dataset.col}"]`)?.focus();   // its row may have been redrawn
+    } else if (chip) {
+      chip.dataset.state = NEXT_STATE[chip.dataset.state]; labelChip(chip); renderBody();
+    }
+  });
+  $('filters').addEventListener('input', renderBody);   // the price box
+  $('f-q').addEventListener('input', renderBody);
+  $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
+  $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
+
+  const head = $('headrow');
+  head.addEventListener('click', e=>{
+    const eye = e.target.closest('.eye'), th = e.target.closest('th');
+    if (eye) toggleCol(eye.dataset.col); else if (th) onSort(th.dataset.key, e.shiftKey);
+  });
+  head.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', headerOf(e).dataset.key); e.dataTransfer.effectAllowed = 'move'; });
+  head.addEventListener('dragover', e=>{ const th = headerOf(e); if (th) { e.preventDefault(); th.classList.add('dragover'); } });
+  head.addEventListener('dragleave', e=>headerOf(e)?.classList.remove('dragover'));
+  head.addEventListener('drop', e=>{
+    const th = headerOf(e); if (!th) return;
+    e.preventDefault(); th.classList.remove('dragover'); moveCol(e.dataTransfer.getData('text/plain'), th.dataset.key);
+  });
+
+  const rows = $('rows');
+  rows.addEventListener('click', e=>{ const n = e.target.closest('.note.more'); if (n) toggleNote(n); });
+  rows.addEventListener('keydown', e=>{
+    const n = e.target.closest('.note.more');
+    if (n && (e.key==="Enter" || e.key===" ")) { e.preventDefault(); toggleNote(n); }
+  });
 }
+
+// ---------- Start ----------
 
 if (AMAZON_TAG) $('amazonnote').hidden = false;
 if (REPO_URL) $('contrib').innerHTML = `<a href="${esc(REPO_URL)}/edit/main/cars.json">Edit cars.json on GitHub</a> and include a source link — see <a href="${esc(REPO_URL)}/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.`;
 
+// The sidebar's open or hidden state is set before the data loads, so phones don't see it flash open.
+const savedSidebar = store.get(SIDEBAR_KEY, null);
+setSidebarOpen(typeof savedSidebar === "boolean" ? savedSidebar : !matchMedia('(max-width: 760px)').matches, false);
+$('sidebarbtn').addEventListener('click', ()=>setSidebarOpen($('sidebar').hidden, true));
+window.addEventListener('resize', relayout);
+
 fetch('cars.json', {cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); }).then(data=>{
-  cars = data; setupFilters(); refresh();
+  cars = data; buildSidebar(); wireEvents(); refresh();
 }).catch(err=>{
-  $('body').innerHTML = `<tr><td class="empty">Couldn't load cars.json (${esc(err.message)}). If you opened this file directly from disk, serve it over HTTP instead (e.g. GitHub Pages or <code>python -m http.server</code>).</td></tr>`;
+  $('rows').innerHTML = `<tr><td class="empty">Couldn't load cars.json (${esc(err.message)}). If you opened this file directly from disk, serve it over HTTP instead (e.g. GitHub Pages or <code>python -m http.server</code>).</td></tr>`;
 });
 </script>
 </body>

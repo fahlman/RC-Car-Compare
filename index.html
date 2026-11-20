@@ -96,6 +96,10 @@
   th .arrow.idle { color:var(--muted); opacity:.75; font-size:13px; }
   th:hover .arrow.idle { opacity:1; }
   th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
+  /* Each header's eye hides that column (the sidebar's eyes bring it back). */
+  th .eye { margin:-3px 0 -3px 6px; padding:2px; vertical-align:middle; opacity:.55; }
+  th .eye svg { width:14px; height:14px; }
+  th:hover .eye, th .eye:focus-visible { opacity:1; }
   /* The first two visible columns stay put when the table scrolls sideways (see updateFreeze). */
   table.frozen .c0, table.frozen .c1 { position:sticky; }
   table.frozen .c0 { left:0; }
@@ -115,7 +119,7 @@
 <body>
 <header>
   <h1>RC Car Spec Compare</h1>
-  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and click an eye in the sidebar to show or hide a column.</p>
+  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, click a header's eye to hide its column, and use the eyes in the sidebar to show or hide any column.</p>
 </header>
 <main>
   <div class="toolbar">
@@ -284,6 +288,13 @@ function renderHead(){
     th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}`
                                            : `<span class="arrow idle" aria-hidden="true">↕</span>`);
     if (si>=0) th.setAttribute('aria-sort', layout.sort[si].dir>0 ? "ascending" : "descending");
+    if (visibleCols().length > 1) {   // the last visible column can't be hidden
+      const eye = document.createElement('button');
+      eye.type = "button"; eye.className = "eye"; eye.innerHTML = EYE;
+      eye.title = `Hide the ${col.label} column`; eye.setAttribute('aria-label', eye.title);
+      eye.addEventListener('click', e=>{ e.stopPropagation(); toggleCol(col.key); });
+      th.appendChild(eye);
+    }
     th.draggable = true; th.dataset.key = col.key; th.title = "Click to sort · Shift+click to add a sort · Drag to move";
     if (col.num) th.style.textAlign = "right";
     th.addEventListener('click', e=>onSort(col.key, e.shiftKey));
@@ -362,9 +373,12 @@ function toggleCol(key){
   if (hiding && visibleCols().length <= 1) return;   // keep at least one column
   layout.hidden = hiding ? layout.hidden.concat(key) : layout.hidden.filter(k=>k!==key);
   refresh();
-  document.querySelector(`#sidebar .eye[data-col="${key}"]`)?.focus();
 }
-$('sidebar').addEventListener('click', e=>{ const b = e.target.closest('.eye'); if (b) toggleCol(b.dataset.col); });
+$('sidebar').addEventListener('click', e=>{
+  const b = e.target.closest('.eye'); if (!b) return;
+  toggleCol(b.dataset.col);
+  document.querySelector(`#sidebar .eye[data-col="${b.dataset.col}"]`)?.focus();
+});
 function moveCol(from, to){
   if (!from || from===to || !COLMAP[from]) return;
   const o = layout.order.filter(k=>k!==from); o.splice(o.indexOf(to), 0, from); layout.order = o; refresh();

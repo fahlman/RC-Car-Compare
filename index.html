@@ -36,9 +36,12 @@
     .sidebar input[type=number] { width:100%; box-sizing:border-box; }
   }
   .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; }
-  .filters { display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-end; }
-  .f { display:flex; flex-direction:column; gap:5px; font-size:13px; }
-  .f > span { color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
+  .filters { display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-start; }
+  /* Each sidebar group folds open and shut from its heading; the badge counts the choices turned on in it. */
+  .f { font-size:13px; }
+  .f > summary { cursor:pointer; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
+  .f[open] > summary { margin-bottom:5px; }
+  .f > summary .on { margin-left:6px; padding:0 6px; border-radius:999px; background:var(--accent); color:var(--panel); font-size:10px; letter-spacing:0; }
   .chips { display:flex; gap:6px; flex-wrap:wrap; }
   /* Filter chips cycle on each click: off → shown (only these) → hidden → off (see CHIP_FILTERS). */
   .chips button { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; user-select:none; }
@@ -62,8 +65,7 @@
   .hint { color:var(--muted); font-size:12.5px; }
 
   .colsec { margin-bottom:16px; font-size:13px; }
-  .colsec summary { cursor:pointer; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
-  .colsec .hint { margin:6px 0 4px; }
+  .colsec .hint { margin:0 0 4px; }
   .colsec #resetcols { margin-top:8px; }
   .colrow { display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; }
   .colrow:hover { background:var(--accent-soft); }
@@ -120,22 +122,22 @@
     <button id="clear">Clear filters</button>
   </div>
   <aside class="panel sidebar" id="sidebar" aria-label="Filters and columns">
-    <details class="colsec">
+    <details class="f colsec" data-group="columns">
       <summary>Columns</summary>
       <p class="hint">Show, hide &amp; drag to reorder.</p>
       <div id="collist"></div>
       <button id="resetcols">Reset layout</button>
     </details>
     <div class="filters" id="filters">
-      <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
-      <div class="f"><span>Scale</span><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></div>
-      <div class="f"><span>Drive</span><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></div>
-      <div class="f"><span>Motor</span><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></div>
-      <div class="f"><span>Runs on</span><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></div>
-      <div class="f"><span>Center diff</span><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></div>
-      <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
-      <div class="f"><span>Type</span><div class="chips" id="f-type" role="group" aria-label="Type"></div></div>
-      <div class="f"><span>Platform</span><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></div>
+      <details class="f" data-group="brand" open><summary>Brand<span class="on" hidden></span></summary><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></details>
+      <details class="f" data-group="scale" open><summary>Scale<span class="on" hidden></span></summary><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></details>
+      <details class="f" data-group="drive" open><summary>Drive<span class="on" hidden></span></summary><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></details>
+      <details class="f" data-group="motor" open><summary>Motor<span class="on" hidden></span></summary><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></details>
+      <details class="f" data-group="cells" open><summary>Runs on<span class="on" hidden></span></summary><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></details>
+      <details class="f" data-group="center" open><summary>Center diff<span class="on" hidden></span></summary><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></details>
+      <details class="f" data-group="price" open><summary>Max price (USD)<span class="on" hidden></span></summary><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></details>
+      <details class="f" data-group="type" open><summary>Type<span class="on" hidden></span></summary><div class="chips" id="f-type" role="group" aria-label="Type"></div></details>
+      <details class="f" data-group="platform" open><summary>Platform<span class="on" hidden></span></summary><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></details>
     </div>
   </aside>
 
@@ -294,7 +296,7 @@ function renderHead(){
 function renderBody(){
   const rows = sorted(filtered()), cols = visibleCols(), tb = $('body');
   $('count').textContent = `${rows.length} of ${cars.length} models`;
-  labelFilterBtn();
+  labelCounts();
   if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; updateFreeze(); return; }
   tb.innerHTML = rows.map(c=>"<tr>"+cols.map((col,i)=>{
     const cls = [col.num?"num":"", col.wrap?"wrap":"", i<2?"c"+i:""].join(" ").trim();
@@ -386,6 +388,7 @@ function setupFilters(){
   $('f-q').addEventListener('input', renderBody);
   $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
   $('filterbtn').addEventListener('click', ()=>setFiltersOpen($('sidebar').hidden, true));
+  setupGroups();
   let saved = null; try { saved = localStorage.getItem(FILTERS_KEY); } catch(e) {}
   setFiltersOpen(saved ? saved==="open" : !matchMedia('(max-width: 760px)').matches, false);
   $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
@@ -402,12 +405,25 @@ function setFiltersOpen(open, remember){
   $('sidebar').hidden = !open;
   document.querySelector('main').classList.toggle('nofilters', !open);
   $('filterbtn').setAttribute('aria-expanded', String(open));
-  labelFilterBtn(); updateFreeze(); markNotes();
+  labelCounts(); updateFreeze(); markNotes();
   if (remember) try { localStorage.setItem(FILTERS_KEY, open ? "open" : "closed"); } catch(e) {}
 }
-function labelFilterBtn(){
+function labelCounts(){
+  document.querySelectorAll('#filters details.f').forEach(d=>{
+    const k = d.querySelectorAll('.chips button:not([data-state="off"])').length + (d.querySelector('#f-price')?.value ? 1 : 0);
+    const on = d.querySelector('summary .on'); on.textContent = k || ""; on.hidden = !k;
+  });
   const n = document.querySelectorAll('.chips button:not([data-state="off"])').length + ($('f-price').value ? 1 : 0);
   $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show sidebar (${n} filter${n>1?"s":""} on)` : "Show sidebar") : "Hide sidebar";
+}
+// Which sidebar groups are folded is remembered in this browser (Columns starts folded, the filters open).
+const GROUPS_KEY = "rc-compare-groups";
+function setupGroups(){
+  let saved = {}; try { saved = JSON.parse(localStorage.getItem(GROUPS_KEY)) || {}; } catch(e) {}
+  document.querySelectorAll('#sidebar details[data-group]').forEach(d=>{
+    if (typeof saved[d.dataset.group] === "boolean") d.open = saved[d.dataset.group];
+    d.addEventListener('toggle', ()=>{ saved[d.dataset.group] = d.open; try { localStorage.setItem(GROUPS_KEY, JSON.stringify(saved)); } catch(e) {} });
+  });
 }
 function clearFilters(){
   document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state="off"; labelChip(b); });

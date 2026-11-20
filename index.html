@@ -21,9 +21,13 @@
   header p { margin:0; color:var(--muted); }
   main { padding: 12px 24px 40px; }
   .content { min-width:0; }
-  /* On wider screens the filters sit in a left sidebar that stays in view and scrolls on its own. */
+  /* On wider screens the filters sit in a left sidebar that stays in view and scrolls on its own.
+     "Hide filters" (main.nofilters) gives the table the full width. On phones they stack under the toolbar. */
   @media (min-width: 761px) {
-    main { display:grid; grid-template-columns: 250px minmax(0,1fr); gap:18px; align-items:start; }
+    main { display:grid; grid-template-columns: 250px minmax(0,1fr); grid-template-rows:auto 1fr;
+           grid-template-areas: "side bar" "side content"; column-gap:18px; align-items:start; }
+    main.nofilters { grid-template-columns: minmax(0,1fr); grid-template-areas: "bar" "content"; }
+    main > .toolbar { grid-area:bar; } .sidebar { grid-area:side; } .content { grid-area:content; }
     .panel.sidebar { position:sticky; top:12px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; margin-bottom:0; }
     .sidebar .filters { flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:16px; }
     .sidebar .chips { flex-direction:column; gap:1px; }
@@ -102,7 +106,21 @@
   <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
 </header>
 <main>
-  <aside class="panel sidebar" aria-label="Filters">
+  <div class="toolbar">
+    <button id="filterbtn" aria-controls="sidebar" aria-expanded="true">Hide filters</button>
+    <input type="search" id="f-q" placeholder="Search model, SKU, notes…" aria-label="Search">
+    <span class="count" id="count"></span>
+    <button id="clear">Clear filters</button>
+    <div class="colmenu">
+      <button id="colbtn" aria-expanded="false">Columns ▾</button>
+      <div class="colpanel" id="colpanel">
+        <h3>Show, hide &amp; drag to reorder</h3>
+        <div id="collist"></div>
+        <div style="padding:8px 6px 4px"><button id="resetcols">Reset layout</button></div>
+      </div>
+    </div>
+  </div>
+  <aside class="panel sidebar" id="sidebar" aria-label="Filters">
     <div class="filters" id="filters">
       <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
       <div class="f"><span>Drive</span><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></div>
@@ -116,20 +134,6 @@
   </aside>
 
   <div class="content">
-  <div class="toolbar">
-    <input type="search" id="f-q" placeholder="Search model, SKU, notes…" aria-label="Search">
-    <span class="count" id="count"></span>
-    <button id="clear">Clear filters</button>
-    <div class="colmenu">
-      <button id="colbtn" aria-expanded="false">Columns ▾</button>
-      <div class="colpanel" id="colpanel">
-        <h3>Show, hide &amp; drag to reorder</h3>
-        <div id="collist"></div>
-        <div style="padding:8px 6px 4px"><button id="resetcols">Reset layout</button></div>
-      </div>
-    </div>
-  </div>
-
   <p class="hint" id="amazonnote" hidden>As an Amazon Associate I earn from qualifying purchases. Amazon's price may differ from the maker's price shown here.</p>
   <div class="tablewrap"><table><thead><tr id="headrow"></tr></thead><tbody id="body"></tbody></table></div>
   <p class="hint">“?” means not verified yet. Speeds are the maker's claims and often assume optional gearing. All data comes from the manufacturers' own websites; prices are their regular US list prices on the date shown.</p>
@@ -279,6 +283,7 @@ function renderHead(){
 function renderBody(){
   const rows = sorted(filtered()), cols = visibleCols(), tb = $('body');
   $('count').textContent = `${rows.length} of ${cars.length} models`;
+  labelFilterBtn();
   if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; updateFreeze(); return; }
   tb.innerHTML = rows.map(c=>"<tr>"+cols.map((col,i)=>{
     const cls = [col.num?"num":"", col.wrap?"wrap":"", i<2?"c"+i:""].join(" ").trim();
@@ -349,6 +354,9 @@ function setupFilters(){
   $('filters').addEventListener('input', renderBody);
   $('f-q').addEventListener('input', renderBody);
   $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
+  $('filterbtn').addEventListener('click', ()=>setFiltersOpen($('sidebar').hidden, true));
+  let saved = null; try { saved = localStorage.getItem(FILTERS_KEY); } catch(e) {}
+  setFiltersOpen(saved ? saved==="open" : !matchMedia('(max-width: 760px)').matches, false);
   $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
   $('colpanel').addEventListener('click', e=>e.stopPropagation());
   document.addEventListener('click', ()=>{ $('colpanel').classList.remove('open'); $('colbtn').setAttribute('aria-expanded','false'); });
@@ -359,6 +367,19 @@ function labelChip(btn){
   btn.setAttribute('aria-pressed', String(s==="in"));
   btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
   btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
+}
+// "Hide filters" folds the sidebar away. The choice is remembered in this browser; phones start folded.
+const FILTERS_KEY = "rc-compare-filters";
+function setFiltersOpen(open, remember){
+  $('sidebar').hidden = !open;
+  document.querySelector('main').classList.toggle('nofilters', !open);
+  $('filterbtn').setAttribute('aria-expanded', String(open));
+  labelFilterBtn(); updateFreeze();
+  if (remember) try { localStorage.setItem(FILTERS_KEY, open ? "open" : "closed"); } catch(e) {}
+}
+function labelFilterBtn(){
+  const n = document.querySelectorAll('.chips button:not([data-state="off"])').length + ($('f-price').value ? 1 : 0);
+  $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show filters (${n} on)` : "Show filters") : "Hide filters";
 }
 function clearFilters(){
   document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state="off"; labelChip(b); });

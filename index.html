@@ -64,15 +64,18 @@
   .count { color:var(--muted); margin-right:auto; }
   .hint { color:var(--muted); font-size:12.5px; }
 
-  .colsec { margin-bottom:16px; font-size:13px; }
-  .colsec .hint { margin:0 0 4px; }
-  .colsec #resetcols { margin-top:8px; }
-  .colrow { display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; }
-  .colrow:hover { background:var(--accent-soft); }
-  .colrow.dragging { opacity:.4; }
-  .colrow .grip { cursor:grab; color:var(--muted); }
-  .colrow label { flex:1; display:flex; gap:7px; align-items:center; cursor:pointer; }
-  .colrow button { padding:0 6px; font-size:12px; line-height:20px; }
+  /* The eye beside a group's heading (or a "More columns" row) shows or hides that table column. */
+  .grp { display:flex; align-items:flex-start; gap:4px; }
+  .grp > details { flex:1; min-width:0; }
+  .grp > .eye { margin-top:-4px; }
+  .eye { display:inline-grid; place-items:center; padding:3px; border:0; border-radius:5px; background:none; color:var(--muted); line-height:0; }
+  .eye:hover, .eye:focus-visible { color:var(--ink); background:var(--accent-soft); }
+  .eye.off { opacity:.6; }
+  .morecols { margin-top:16px; }
+  .morecols #resetcols { margin-top:8px; }
+  .colrow { display:flex; align-items:center; gap:8px; padding:1px 0 1px 6px; border-radius:6px; }
+  .colrow span { flex:1; }
+  .colrow.off span { color:var(--muted); }
 
   /* The table scrolls inside its own box, no taller than the window, so the sticky header row stays in view. */
   .tablewrap { overflow:auto; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px);
@@ -112,7 +115,7 @@
 <body>
 <header>
   <h1>RC Car Spec Compare</h1>
-  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> in the sidebar to show, hide or reorder columns.</p>
+  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and click an eye in the sidebar to show or hide a column.</p>
 </header>
 <main>
   <div class="toolbar">
@@ -122,23 +125,22 @@
     <button id="clear">Clear filters</button>
   </div>
   <aside class="panel sidebar" id="sidebar" aria-label="Filters and columns">
-    <details class="f colsec" data-group="columns">
-      <summary>Columns</summary>
-      <p class="hint">Show, hide &amp; drag to reorder.</p>
+    <div class="filters" id="filters">
+      <div class="grp"><details class="f" data-group="brand" open><summary>Brand<span class="on" hidden></span></summary><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></details><button type="button" class="eye" data-col="brand"></button></div>
+      <div class="grp"><details class="f" data-group="scale" open><summary>Scale<span class="on" hidden></span></summary><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></details><button type="button" class="eye" data-col="scale"></button></div>
+      <div class="grp"><details class="f" data-group="drive" open><summary>Drive<span class="on" hidden></span></summary><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></details><button type="button" class="eye" data-col="drive"></button></div>
+      <div class="grp"><details class="f" data-group="motor" open><summary>Motor<span class="on" hidden></span></summary><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></details><button type="button" class="eye" data-col="motor"></button></div>
+      <div class="grp"><details class="f" data-group="cells" open><summary>Runs on<span class="on" hidden></span></summary><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></details><button type="button" class="eye" data-col="battery"></button></div>
+      <div class="grp"><details class="f" data-group="center" open><summary>Center diff<span class="on" hidden></span></summary><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></details><button type="button" class="eye" data-col="centerDiff"></button></div>
+      <div class="grp"><details class="f" data-group="price" open><summary>Max price (USD)<span class="on" hidden></span></summary><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></details><button type="button" class="eye" data-col="priceUsd"></button></div>
+      <div class="grp"><details class="f" data-group="type" open><summary>Type<span class="on" hidden></span></summary><div class="chips" id="f-type" role="group" aria-label="Type"></div></details><button type="button" class="eye" data-col="type"></button></div>
+      <div class="grp"><details class="f" data-group="platform" open><summary>Platform<span class="on" hidden></span></summary><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></details><button type="button" class="eye" data-col="platform"></button></div>
+    </div>
+    <details class="f morecols" data-group="morecols" open>
+      <summary>More columns</summary>
       <div id="collist"></div>
       <button id="resetcols">Reset layout</button>
     </details>
-    <div class="filters" id="filters">
-      <details class="f" data-group="brand" open><summary>Brand<span class="on" hidden></span></summary><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></details>
-      <details class="f" data-group="scale" open><summary>Scale<span class="on" hidden></span></summary><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></details>
-      <details class="f" data-group="drive" open><summary>Drive<span class="on" hidden></span></summary><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></details>
-      <details class="f" data-group="motor" open><summary>Motor<span class="on" hidden></span></summary><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></details>
-      <details class="f" data-group="cells" open><summary>Runs on<span class="on" hidden></span></summary><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></details>
-      <details class="f" data-group="center" open><summary>Center diff<span class="on" hidden></span></summary><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></details>
-      <details class="f" data-group="price" open><summary>Max price (USD)<span class="on" hidden></span></summary><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></details>
-      <details class="f" data-group="type" open><summary>Type<span class="on" hidden></span></summary><div class="chips" id="f-type" role="group" aria-label="Type"></div></details>
-      <details class="f" data-group="platform" open><summary>Platform<span class="on" hidden></span></summary><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></details>
-    </div>
   </aside>
 
   <div class="content">
@@ -337,29 +339,32 @@ function updateFreeze(){
 }
 window.addEventListener('resize', ()=>{ updateFreeze(); markNotes(); });
 
-function renderColPanel(){
-  const list = $('collist'); list.innerHTML = "";
-  layout.order.forEach((key,i)=>{
-    const col = COLMAP[key], row = document.createElement('div');
-    row.className = "colrow"; row.draggable = true; row.dataset.key = key;
-    row.innerHTML = `<span class="grip">⠿</span><label><input type="checkbox" ${layout.hidden.includes(key)?"":"checked"}> ${esc(col.label)}</label>
-      <button title="Move up" ${i===0?"disabled":""}>↑</button><button title="Move down" ${i===layout.order.length-1?"disabled":""}>↓</button>`;
-    row.querySelector('input').addEventListener('change', e=>{
-      layout.hidden = e.target.checked ? layout.hidden.filter(k=>k!==key) : layout.hidden.concat(key);
-      if (visibleCols().length===0){ layout.hidden = layout.hidden.filter(k=>k!==key); e.target.checked = true; }
-      refresh();
-    });
-    const [up, down] = row.querySelectorAll('button');
-    up.addEventListener('click', ()=>swap(i, i-1)); down.addEventListener('click', ()=>swap(i, i+1));
-    row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', key); row.classList.add('dragging'); });
-    row.addEventListener('dragend', ()=>row.classList.remove('dragging'));
-    row.addEventListener('dragover', e=>e.preventDefault());
-    row.addEventListener('drop', e=>{ e.preventDefault(); moveCol(e.dataTransfer.getData('text/plain'), key); });
-    list.appendChild(row);
+// Eyes in the sidebar show or hide table columns. Filter groups carry the eye for their own column;
+// every other column gets a row under "More columns", in the table's current order.
+const GROUP_COL = { brand:"brand", scale:"scale", drive:"drive", motor:"motor", cells:"battery", center:"centerDiff", price:"priceUsd", type:"type", platform:"platform" };
+const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+function renderEyes(){
+  const grouped = new Set(Object.values(GROUP_COL));
+  $('collist').innerHTML = layout.order.filter(k=>!grouped.has(k)).map(k=>
+    `<div class="colrow"><span>${esc(COLMAP[k].label)}</span><button type="button" class="eye" data-col="${esc(k)}"></button></div>`).join("");
+  document.querySelectorAll('#sidebar .eye').forEach(b=>{
+    const col = COLMAP[b.dataset.col], shown = !layout.hidden.includes(b.dataset.col);
+    b.innerHTML = shown ? EYE : EYE_OFF;
+    b.classList.toggle('off', !shown);
+    b.closest('.colrow')?.classList.toggle('off', !shown);
+    b.title = `${shown ? "Hide" : "Show"} the ${col.label} column`;
+    b.setAttribute('aria-label', b.title);
   });
 }
-
-function swap(i,j){ if (j<0||j>=layout.order.length) return; const o = layout.order; [o[i],o[j]]=[o[j],o[i]]; refresh(); }
+function toggleCol(key){
+  const hiding = !layout.hidden.includes(key);
+  if (hiding && visibleCols().length <= 1) return;   // keep at least one column
+  layout.hidden = hiding ? layout.hidden.concat(key) : layout.hidden.filter(k=>k!==key);
+  refresh();
+  document.querySelector(`#sidebar .eye[data-col="${key}"]`)?.focus();
+}
+$('sidebar').addEventListener('click', e=>{ const b = e.target.closest('.eye'); if (b) toggleCol(b.dataset.col); });
 function moveCol(from, to){
   if (!from || from===to || !COLMAP[from]) return;
   const o = layout.order.filter(k=>k!==from); o.splice(o.indexOf(to), 0, from); layout.order = o; refresh();
@@ -373,7 +378,7 @@ function onSort(key, add){
   }
   refresh();
 }
-function refresh(){ saveLayout(); renderHead(); renderBody(); renderColPanel(); }
+function refresh(){ saveLayout(); renderHead(); renderBody(); renderEyes(); }
 
 function setupFilters(){
   CHIP_FILTERS.forEach(f=>{
@@ -399,7 +404,7 @@ function labelChip(btn){
   btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
   btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
 }
-// "Hide sidebar" folds the filters and Columns away. The choice is remembered in this browser; phones start folded.
+// "Hide sidebar" folds the filters and column eyes away. The choice is remembered in this browser; phones start folded.
 const FILTERS_KEY = "rc-compare-filters";
 function setFiltersOpen(open, remember){
   $('sidebar').hidden = !open;
@@ -416,7 +421,7 @@ function labelCounts(){
   const n = document.querySelectorAll('.chips button:not([data-state="off"])').length + ($('f-price').value ? 1 : 0);
   $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show sidebar (${n} filter${n>1?"s":""} on)` : "Show sidebar") : "Hide sidebar";
 }
-// Which sidebar groups are folded is remembered in this browser (Columns starts folded, the filters open).
+// Which sidebar groups are folded is remembered in this browser; they all start open.
 const GROUPS_KEY = "rc-compare-groups";
 function setupGroups(){
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(GROUPS_KEY)) || {}; } catch(e) {}

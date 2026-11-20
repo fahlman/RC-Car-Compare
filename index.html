@@ -61,6 +61,12 @@
   th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
   th .arrow { color:var(--accent); margin-left:4px; }
   th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
+  /* The first two visible columns stay put when the table scrolls sideways (see updateFreeze). */
+  table.frozen .c0, table.frozen .c1 { position:sticky; }
+  table.frozen .c0 { left:0; }
+  table.frozen .c1 { left:var(--c1-left, 0); box-shadow: inset -1px 0 0 var(--line); }
+  table.frozen td.c0, table.frozen td.c1 { background:var(--panel); z-index:1; }
+  table.frozen th.c0, table.frozen th.c1 { z-index:3; }
   tbody tr:hover td { background:var(--accent-soft); }
   td.num { text-align:right; font-variant-numeric: tabular-nums; }
   .unk { color:var(--muted); cursor:help; border-bottom:1px dotted var(--muted); }
@@ -228,8 +234,9 @@ function sorted(rows){
 
 function renderHead(){
   const tr = $('headrow'); tr.innerHTML = "";
-  visibleCols().forEach(col=>{
+  visibleCols().forEach((col,i)=>{
     const th = document.createElement('th');
+    if (i<2) th.className = "c"+i;
     const si = layout.sort.findIndex(s=>s.key===col.key);
     th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}` : "");
     th.draggable = true; th.dataset.key = col.key; th.title = "Click to sort · Shift+click to add a sort · Drag to move";
@@ -246,13 +253,25 @@ function renderHead(){
 function renderBody(){
   const rows = sorted(filtered()), cols = visibleCols(), tb = $('body');
   $('count').textContent = `${rows.length} of ${cars.length} models`;
-  if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; return; }
-  tb.innerHTML = rows.map(c=>"<tr>"+cols.map(col=>{
-    const cls = [col.num?"num":"", col.wrap?"wrap":""].join(" ").trim();
+  if (!rows.length){ tb.innerHTML = `<tr><td class="empty" colspan="${cols.length}">No models match these filters.</td></tr>`; updateFreeze(); return; }
+  tb.innerHTML = rows.map(c=>"<tr>"+cols.map((col,i)=>{
+    const cls = [col.num?"num":"", col.wrap?"wrap":"", i<2?"c"+i:""].join(" ").trim();
     const html = col.render ? col.render(c) : (c[col.key]==null||c[col.key]==="" ? unk() : esc(c[col.key]));
     return `<td${cls?` class="${cls}"`:""}>${html}</td>`;
   }).join("")+"</tr>").join("");
+  updateFreeze();
 }
+
+// Freeze the first two visible columns, unless together they'd take more than half
+// of the table's visible width (as on a phone), where freezing would leave no room to scroll.
+function updateFreeze(){
+  const table = $('headrow').closest('table'), wrap = table.parentElement, ths = $('headrow').children;
+  if (ths.length < 2) { table.classList.remove('frozen'); return; }
+  const w0 = ths[0].offsetWidth, w1 = ths[1].offsetWidth;
+  table.style.setProperty('--c1-left', w0 + "px");
+  table.classList.toggle('frozen', w0 + w1 <= wrap.clientWidth / 2);
+}
+window.addEventListener('resize', updateFreeze);
 
 function renderColPanel(){
   const list = $('collist'); list.innerHTML = "";

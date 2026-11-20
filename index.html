@@ -25,8 +25,16 @@
   .f { display:flex; flex-direction:column; gap:5px; font-size:13px; }
   .f > span { color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
   .chips { display:flex; gap:6px; flex-wrap:wrap; }
-  .chips label { display:flex; align-items:center; gap:5px; padding:4px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; user-select:none; }
-  .chips input { accent-color: var(--accent); margin:0; }
+  /* Filter chips cycle on each click: off → shown (only these) → hidden → off (see CHIP_FILTERS). */
+  .chips button { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; user-select:none; }
+  .chips .box { width:14px; height:14px; border:1.5px solid var(--muted); border-radius:3px; display:grid; place-items:center; font-size:11px; line-height:1; }
+  .chips [data-state="in"] { border-color:var(--accent); }
+  .chips [data-state="in"] .box { background:var(--accent); border-color:var(--accent); color:var(--panel); }
+  .chips [data-state="in"] .box::after { content:"✓"; }
+  .chips [data-state="out"] { color:var(--muted); }
+  .chips [data-state="out"] .name { text-decoration:line-through; }
+  .chips [data-state="out"] .box { border-color:var(--no); color:var(--no); }
+  .chips [data-state="out"] .box::after { content:"✕"; }
   select, input[type=number], input[type=search] {
     font: inherit; padding:6px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--ink);
   }
@@ -80,29 +88,19 @@
 <body>
 <header>
   <h1>RC Car Spec Compare</h1>
-  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
+  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
 </header>
 <main>
   <section class="panel">
     <div class="filters" id="filters">
-      <div class="f"><span>Brand</span><div class="chips" id="f-brand"></div></div>
-      <div class="f"><span>Drive</span>
-        <select id="f-drive"><option value="">Any</option><option>4WD</option><option>2WD</option></select></div>
-      <div class="f"><span>Motor</span>
-        <select id="f-motor"><option value="">Any</option><option>Brushless</option><option>Brushed</option></select></div>
-      <div class="f"><span>Runs on</span>
-        <select id="f-cells"><option value="">Any battery</option><option value="2">2S LiPo</option><option value="3">3S LiPo</option><option value="4">4S LiPo</option><option value="6">6S LiPo</option></select></div>
-      <div class="f"><span>Center diff</span>
-        <select id="f-center">
-          <option value="">Any</option>
-          <option value="yes">Yes (stock)</option>
-          <option value="metal">Yes, metal gears</option>
-          <option value="optional">Optional upgrade</option>
-          <option value="no">No (incl. 2WD)</option>
-        </select></div>
+      <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
+      <div class="f"><span>Drive</span><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></div>
+      <div class="f"><span>Motor</span><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></div>
+      <div class="f"><span>Runs on</span><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></div>
+      <div class="f"><span>Center diff</span><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></div>
+      <div class="f"><span>Type</span><div class="chips" id="f-type" role="group" aria-label="Type"></div></div>
+      <div class="f"><span>Platform</span><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></div>
       <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
-      <div class="f"><span>Type</span><select id="f-type"><option value="">Any</option></select></div>
-      <div class="f"><span>Platform</span><select id="f-platform"><option value="">Any</option></select></div>
       <div class="f"><span>Search</span><input type="search" id="f-q" placeholder="Model, SKU, notes…"></div>
     </div>
   </section>
@@ -197,21 +195,36 @@ const $ = id => document.getElementById(id);
 function visibleCols(){ return layout.order.filter(k=>!layout.hidden.includes(k)).map(k=>COLMAP[k]); }
 function sortValue(col, c){ return col.sortVal ? col.sortVal(c) : c[col.key]; }
 
+// Chip filters. A click cycles a chip: show only matching cars, then hide them, then clear it.
+// Shown chips in one group combine with "or"; the groups combine with "and".
+const uniq = a => [...new Set(a.filter(v=>v!=null))].sort((x,y)=>String(x).localeCompare(String(y)));
+const CENTER = { yes:"Yes (stock)", metal:"Yes, metal gears", optional:"Optional upgrade", no:"No (incl. 2WD)" };
+const CHIP_FILTERS = [
+  { id:"brand",    values: cs=>uniq(cs.map(c=>c.brand)),    match:(c,v)=>c.brand===v },
+  { id:"drive",    values: ()=>["4WD","2WD"],               match:(c,v)=>c.drive===v },
+  { id:"motor",    values: ()=>["Brushless","Brushed"],     match:(c,v)=>c.motor===v },
+  { id:"cells",    values: cs=>{ const lo=Math.min(...cs.map(c=>c.minCells??Infinity)), hi=Math.max(...cs.map(c=>c.maxCells??-Infinity));
+                                 return Array.from({length:Math.max(0,hi-lo+1)}, (_,i)=>String(lo+i)); },
+                   text: v=>v+"S LiPo",                     match:(c,v)=>c.minCells<=+v && +v<=c.maxCells },
+  { id:"center",   values: ()=>Object.keys(CENTER), text: v=>CENTER[v],
+                   match:(c,v)=> v==="metal" ? c.centerDiff==="yes" && c.centerDiffGears==="metal"
+                              : v==="no"    ? c.centerDiff==="no" || c.centerDiff==="n/a"
+                              : c.centerDiff===v },
+  { id:"type",     values: cs=>uniq(cs.map(c=>c.type)),     match:(c,v)=>c.type===v },
+  { id:"platform", values: cs=>uniq(cs.map(c=>c.platform)), match:(c,v)=>c.platform===v },
+];
+
 function filtered(){
-  const brands = [...document.querySelectorAll('#f-brand input:checked')].map(i=>i.value);
-  const drive = $('f-drive').value, motor = $('f-motor').value, cells = +$('f-cells').value || 0;
-  const center = $('f-center').value, maxPrice = parseFloat($('f-price').value), type = $('f-type').value, platform = $('f-platform').value;
-  const q = $('f-q').value.trim().toLowerCase();
+  const chips = CHIP_FILTERS.map(f=>{
+    const btns = [...$('f-'+f.id).children], pick = s => btns.filter(b=>b.dataset.state===s).map(b=>b.dataset.value);
+    return { match:f.match, shown:pick("in"), hidden:pick("out") };
+  });
+  const maxPrice = parseFloat($('f-price').value), q = $('f-q').value.trim().toLowerCase();
   return cars.filter(c=>{
-    if (brands.length && !brands.includes(c.brand)) return false;
-    if (drive && c.drive!==drive) return false;
-    if (motor && c.motor!==motor) return false;
-    if (type && c.type!==type) return false;
-    if (platform && c.platform!==platform) return false;
-    if (cells && !(c.minCells<=cells && cells<=c.maxCells)) return false;
-    if (center==="metal" && !(c.centerDiff==="yes" && c.centerDiffGears==="metal")) return false;
-    if (center==="no" && !(c.centerDiff==="no" || c.centerDiff==="n/a")) return false;
-    if (center && center!=="metal" && center!=="no" && c.centerDiff!==center) return false;
+    for (const {match, shown, hidden} of chips){
+      if (shown.length && !shown.some(v=>match(c,v))) return false;
+      if (hidden.some(v=>match(c,v))) return false;
+    }
     if (!isNaN(maxPrice) && !(c.priceUsd!=null && c.priceUsd<=maxPrice)) return false;
     if (q && !Object.values(c).join(" ").toLowerCase().includes(q)) return false;
     return true;
@@ -312,12 +325,14 @@ function onSort(key, add){
 function refresh(){ saveLayout(); renderHead(); renderBody(); renderColPanel(); }
 
 function setupFilters(){
-  const brands = [...new Set(cars.map(c=>c.brand))].sort();
-  $('f-brand').innerHTML = brands.map(b=>`<label><input type="checkbox" value="${esc(b)}"> ${esc(b)}</label>`).join("");
-  const types = [...new Set(cars.map(c=>c.type))].sort();
-  $('f-type').innerHTML = '<option value="">Any</option>' + types.map(t=>`<option>${esc(t)}</option>`).join("");
-  const plats = [...new Set(cars.map(c=>c.platform))].sort();
-  $('f-platform').innerHTML = '<option value="">Any</option>' + plats.map(t=>`<option>${esc(t)}</option>`).join("");
+  CHIP_FILTERS.forEach(f=>{
+    const box = $('f-'+f.id);
+    box.innerHTML = f.values(cars).map(v=>`<button type="button" data-value="${esc(v)}" data-text="${esc(f.text ? f.text(v) : v)}" data-state="off"><span class="box" aria-hidden="true"></span><span class="name">${esc(f.text ? f.text(v) : v)}</span></button>`).join("");
+    [...box.children].forEach(btn=>{
+      labelChip(btn);
+      btn.addEventListener('click', ()=>{ btn.dataset.state = ({off:"in", in:"out", out:"off"})[btn.dataset.state]; labelChip(btn); renderBody(); });
+    });
+  });
   $('filters').addEventListener('input', renderBody);
   $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
   $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
@@ -325,9 +340,14 @@ function setupFilters(){
   document.addEventListener('click', ()=>{ $('colpanel').classList.remove('open'); $('colbtn').setAttribute('aria-expanded','false'); });
   $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
 }
+function labelChip(btn){
+  const t = btn.dataset.text, s = btn.dataset.state, group = btn.parentElement.getAttribute('aria-label');
+  btn.setAttribute('aria-pressed', String(s==="in"));
+  btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
+  btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
+}
 function clearFilters(){
-  document.querySelectorAll('#f-brand input').forEach(i=>i.checked=false);
-  ['f-drive','f-motor','f-cells','f-center','f-type','f-platform'].forEach(id=>$(id).value="");
+  document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state="off"; labelChip(b); });
   $('f-price').value=""; $('f-q').value="";
 }
 

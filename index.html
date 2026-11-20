@@ -87,6 +87,9 @@
        cursor:pointer; user-select:none; z-index:2; }
   th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
   th .arrow { color:var(--accent); margin-left:4px; }
+  /* Unsorted headers show a faint ↕ so it's clear they can be sorted; it darkens on hover. */
+  th .arrow.idle { color:var(--muted); opacity:.75; font-size:13px; }
+  th:hover .arrow.idle { opacity:1; }
   th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
   /* The first two visible columns stay put when the table scrolls sideways (see updateFreeze). */
   table.frozen .c0, table.frozen .c1 { position:sticky; }
@@ -274,7 +277,9 @@ function renderHead(){
     const th = document.createElement('th');
     if (i<2) th.className = "c"+i;
     const si = layout.sort.findIndex(s=>s.key===col.key);
-    th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}` : "");
+    th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}`
+                                           : `<span class="arrow idle" aria-hidden="true">↕</span>`);
+    if (si>=0) th.setAttribute('aria-sort', layout.sort[si].dir>0 ? "ascending" : "descending");
     th.draggable = true; th.dataset.key = col.key; th.title = "Click to sort · Shift+click to add a sort · Drag to move";
     if (col.num) th.style.textAlign = "right";
     th.addEventListener('click', e=>onSort(col.key, e.shiftKey));

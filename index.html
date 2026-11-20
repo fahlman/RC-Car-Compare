@@ -96,7 +96,7 @@
   th .arrow.idle { color:var(--muted); opacity:.75; font-size:13px; }
   th:hover .arrow.idle { opacity:1; }
   th .rank { font-size:10px; color:var(--accent); vertical-align:super; }
-  /* Each header's eye hides that column (the sidebar's eyes bring it back). */
+  /* A header's eye hides that column (only columns with a filter group have one; the sidebar's eyes bring columns back). */
   th .eye { margin:-3px 0 -3px 6px; padding:2px; vertical-align:middle; opacity:.55; }
   th .eye svg { width:14px; height:14px; }
   th:hover .eye, th .eye:focus-visible { opacity:1; }
@@ -288,7 +288,8 @@ function renderHead(){
     th.innerHTML = esc(col.label) + (si>=0 ? `<span class="arrow">${layout.sort[si].dir>0?"▲":"▼"}</span>${layout.sort.length>1?`<span class="rank">${si+1}</span>`:""}`
                                            : `<span class="arrow idle" aria-hidden="true">↕</span>`);
     if (si>=0) th.setAttribute('aria-sort', layout.sort[si].dir>0 ? "ascending" : "descending");
-    if (visibleCols().length > 1) {   // the last visible column can't be hidden
+    // Only columns with a filter group in the sidebar get a header eye; the last visible column can't be hidden.
+    if (GROUPED.has(col.key) && visibleCols().length > 1) {
       const eye = document.createElement('button');
       eye.type = "button"; eye.className = "eye"; eye.innerHTML = EYE;
       eye.title = `Hide the ${col.label} column`; eye.setAttribute('aria-label', eye.title);
@@ -353,11 +354,11 @@ window.addEventListener('resize', ()=>{ updateFreeze(); markNotes(); });
 // Eyes in the sidebar show or hide table columns. Filter groups carry the eye for their own column;
 // every other column gets a row under "More columns", in the table's current order.
 const GROUP_COL = { brand:"brand", scale:"scale", drive:"drive", motor:"motor", cells:"battery", center:"centerDiff", price:"priceUsd", type:"type", platform:"platform" };
+const GROUPED = new Set(Object.values(GROUP_COL));
 const EYE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 function renderEyes(){
-  const grouped = new Set(Object.values(GROUP_COL));
-  $('collist').innerHTML = layout.order.filter(k=>!grouped.has(k)).map(k=>
+  $('collist').innerHTML = layout.order.filter(k=>!GROUPED.has(k)).map(k=>
     `<div class="colrow"><span>${esc(COLMAP[k].label)}</span><button type="button" class="eye" data-col="${esc(k)}"></button></div>`).join("");
   document.querySelectorAll('#sidebar .eye').forEach(b=>{
     const col = COLMAP[b.dataset.col], shown = !layout.hidden.includes(b.dataset.col);

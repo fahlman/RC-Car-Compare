@@ -128,6 +128,7 @@
   <aside class="panel sidebar" id="sidebar" aria-label="Filters">
     <div class="filters" id="filters">
       <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
+      <div class="f"><span>Scale</span><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></div>
       <div class="f"><span>Drive</span><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></div>
       <div class="f"><span>Motor</span><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></div>
       <div class="f"><span>Runs on</span><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></div>
@@ -220,9 +221,12 @@ function sortValue(col, c){ return col.sortVal ? col.sortVal(c) : c[col.key]; }
 // Chip filters. A click cycles a chip: show only matching cars, then hide them, then clear it.
 // Shown chips in one group combine with "or"; the groups combine with "and".
 const uniq = a => [...new Set(a.filter(v=>v!=null))].sort((x,y)=>String(x).localeCompare(String(y)));
+const scaleDen = s => /^1\/(\d+)$/.test(s) ? +s.slice(2) : Infinity;
 const CENTER = { yes:"Yes (stock)", metal:"Yes, metal gears", optional:"Optional upgrade", no:"No (incl. 2WD)" };
 const CHIP_FILTERS = [
   { id:"brand",    values: cs=>uniq(cs.map(c=>c.brand)),    match:(c,v)=>c.brand===v },
+  // Biggest first: 1/5, 1/8, 1/10 … then "Mini".
+  { id:"scale",    values: cs=>uniq(cs.map(c=>c.scale)).sort((a,b)=>scaleDen(a)-scaleDen(b)), match:(c,v)=>c.scale===v },
   { id:"drive",    values: ()=>["4WD","2WD"],               match:(c,v)=>c.drive===v },
   { id:"motor",    values: ()=>["Brushless","Brushed"],     match:(c,v)=>c.motor===v },
   { id:"cells",    values: cs=>{ const lo=Math.min(...cs.map(c=>c.minCells??Infinity)), hi=Math.max(...cs.map(c=>c.maxCells??-Infinity));

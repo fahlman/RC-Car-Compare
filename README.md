@@ -4,7 +4,7 @@ A filterable, sortable table of hobby-grade 1/10-scale ready-to-run off-road RC 
 
 - Filter by brand, scale, drive, motor, battery (2S/3S/4S), center differential, price, type and platform. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it
 - Click a header to sort, or Shift+click to sort by more than one column
-- Drag headers, or use **Columns**, to reorder or hide columns. Your layout is saved in your browser
+- Drag headers, or use **Columns** in the sidebar, to reorder or hide columns. Your layout is saved in your browser
 
 ## Set up GitHub Pages
 

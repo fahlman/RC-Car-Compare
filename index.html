@@ -22,7 +22,7 @@
   main { padding: 12px 24px 40px; }
   .content { min-width:0; }
   /* On wider screens the filters sit in a left sidebar that stays in view and scrolls on its own.
-     "Hide filters" (main.nofilters) gives the table the full width. On phones they stack under the toolbar. */
+     "Hide sidebar" (main.nofilters) gives the table the full width. On phones they stack under the toolbar. */
   @media (min-width: 761px) {
     main { display:grid; grid-template-columns: 250px minmax(0,1fr); grid-template-rows:auto 1fr;
            grid-template-areas: "side bar" "side content"; column-gap:18px; align-items:start; }
@@ -61,11 +61,10 @@
   .count { color:var(--muted); margin-right:auto; }
   .hint { color:var(--muted); font-size:12.5px; }
 
-  .colmenu { position:relative; }
-  .colpanel { display:none; position:absolute; right:0; top:calc(100% + 6px); z-index:20; width:270px; max-height:70vh; overflow:auto;
-              background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:0 10px 30px rgba(0,0,0,.15); padding:8px; }
-  .colpanel.open { display:block; }
-  .colpanel h3 { margin:4px 6px 8px; font-size:13px; color:var(--muted); }
+  .colsec { margin-bottom:16px; font-size:13px; }
+  .colsec summary { cursor:pointer; color:var(--muted); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:.05em; }
+  .colsec .hint { margin:6px 0 4px; }
+  .colsec #resetcols { margin-top:8px; }
   .colrow { display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; }
   .colrow:hover { background:var(--accent-soft); }
   .colrow.dragging { opacity:.4; }
@@ -108,24 +107,22 @@
 <body>
 <header>
   <h1>RC Car Spec Compare</h1>
-  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
+  <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> in the sidebar to show, hide or reorder columns.</p>
 </header>
 <main>
   <div class="toolbar">
-    <button id="filterbtn" aria-controls="sidebar" aria-expanded="true">Hide filters</button>
+    <button id="filterbtn" aria-controls="sidebar" aria-expanded="true">Hide sidebar</button>
     <input type="search" id="f-q" placeholder="Search model, SKU, notes…" aria-label="Search">
     <span class="count" id="count"></span>
     <button id="clear">Clear filters</button>
-    <div class="colmenu">
-      <button id="colbtn" aria-expanded="false">Columns ▾</button>
-      <div class="colpanel" id="colpanel">
-        <h3>Show, hide &amp; drag to reorder</h3>
-        <div id="collist"></div>
-        <div style="padding:8px 6px 4px"><button id="resetcols">Reset layout</button></div>
-      </div>
-    </div>
   </div>
-  <aside class="panel sidebar" id="sidebar" aria-label="Filters">
+  <aside class="panel sidebar" id="sidebar" aria-label="Filters and columns">
+    <details class="colsec">
+      <summary>Columns</summary>
+      <p class="hint">Show, hide &amp; drag to reorder.</p>
+      <div id="collist"></div>
+      <button id="resetcols">Reset layout</button>
+    </details>
     <div class="filters" id="filters">
       <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
       <div class="f"><span>Scale</span><div class="chips" id="f-scale" role="group" aria-label="Scale"></div></div>
@@ -386,9 +383,6 @@ function setupFilters(){
   $('filterbtn').addEventListener('click', ()=>setFiltersOpen($('sidebar').hidden, true));
   let saved = null; try { saved = localStorage.getItem(FILTERS_KEY); } catch(e) {}
   setFiltersOpen(saved ? saved==="open" : !matchMedia('(max-width: 760px)').matches, false);
-  $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
-  $('colpanel').addEventListener('click', e=>e.stopPropagation());
-  document.addEventListener('click', ()=>{ $('colpanel').classList.remove('open'); $('colbtn').setAttribute('aria-expanded','false'); });
   $('resetcols').addEventListener('click', ()=>{ layout = defaultLayout(); refresh(); });
 }
 function labelChip(btn){
@@ -397,7 +391,7 @@ function labelChip(btn){
   btn.setAttribute('aria-label', s==="out" ? `${t} (hidden)` : t);
   btn.title = `${group}: ` + ({off:`show only ${t}`, in:`hide ${t}`, out:`clear ${t}`})[s];
 }
-// "Hide filters" folds the sidebar away. The choice is remembered in this browser; phones start folded.
+// "Hide sidebar" folds the filters and Columns away. The choice is remembered in this browser; phones start folded.
 const FILTERS_KEY = "rc-compare-filters";
 function setFiltersOpen(open, remember){
   $('sidebar').hidden = !open;
@@ -408,7 +402,7 @@ function setFiltersOpen(open, remember){
 }
 function labelFilterBtn(){
   const n = document.querySelectorAll('.chips button:not([data-state="off"])').length + ($('f-price').value ? 1 : 0);
-  $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show filters (${n} on)` : "Show filters") : "Hide filters";
+  $('filterbtn').textContent = $('sidebar').hidden ? (n ? `Show sidebar (${n} filter${n>1?"s":""} on)` : "Show sidebar") : "Hide sidebar";
 }
 function clearFilters(){
   document.querySelectorAll('.chips button').forEach(b=>{ b.dataset.state="off"; labelChip(b); });

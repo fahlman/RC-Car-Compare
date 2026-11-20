@@ -79,6 +79,11 @@
   table { border-collapse:separate; border-spacing:0; width:100%; min-width:900px; }
   th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; white-space:nowrap; }
   td.wrap { white-space:normal; min-width:240px; max-width:380px; color:var(--muted); font-size:13.5px; }
+  /* Notes show two lines with "…"; clicking a cut-off note shows all of it (see markNotes). */
+  .note { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+  .note.open { display:block; -webkit-line-clamp:unset; line-clamp:none; }
+  .note.more { cursor:pointer; }
+  .note.more:hover, .note.more:focus-visible { color:var(--ink); }
   th { position:sticky; top:0; background:var(--panel); font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);
        cursor:pointer; user-select:none; z-index:2; }
   th.dragover { box-shadow: inset 3px 0 0 var(--accent); }
@@ -173,7 +178,7 @@ const COLUMNS = [
   ...(AMAZON_TAG ? [{ key:"amazon", label:"Amazon", sortVal:c=> c.amazonAsin ? 0 : null, render:c=> c.amazonAsin
     ? `<a href="https://www.amazon.com/dp/${encodeURIComponent(c.amazonAsin)}?tag=${encodeURIComponent(AMAZON_TAG)}" target="_blank" rel="sponsored noopener">Buy on Amazon</a>`
     : "—" }] : []),
-  { key:"notes", label:"Notes", wrap:true, render:c=>esc(c.notes||"") },
+  { key:"notes", label:"Notes", wrap:true, render:c=> c.notes ? `<div class="note">${esc(c.notes)}</div>` : "" },
   { key:"source", label:"Source", render:c=> c.source ? `<a href="${esc(c.source)}" target="_blank" rel="noopener">link</a>` : unk() },
   { key:"verified", label:"Verified", hidden:true },
 ];
@@ -290,8 +295,28 @@ function renderBody(){
     const html = col.render ? col.render(c) : (c[col.key]==null||c[col.key]==="" ? unk() : esc(c[col.key]));
     return `<td${cls?` class="${cls}"`:""}>${html}</td>`;
   }).join("")+"</tr>").join("");
-  updateFreeze();
+  updateFreeze(); markNotes();
 }
+
+// Mark the notes that the two-line limit cuts off, so only those can be clicked open.
+function markNotes(){
+  document.querySelectorAll('.note:not(.open)').forEach(n=>{
+    const cut = n.scrollHeight > n.clientHeight + 1;
+    n.classList.toggle('more', cut);
+    if (cut) { n.tabIndex = 0; n.setAttribute('role','button'); n.setAttribute('aria-expanded','false'); n.title = "Click to show the whole note"; }
+    else { n.removeAttribute('tabindex'); n.removeAttribute('role'); n.removeAttribute('aria-expanded'); n.removeAttribute('title'); }
+  });
+}
+function toggleNote(n){
+  const open = n.classList.toggle('open');
+  n.setAttribute('aria-expanded', String(open));
+  n.title = open ? "Click to show less" : "Click to show the whole note";
+}
+$('body').addEventListener('click', e=>{ const n = e.target.closest('.note.more'); if (n) toggleNote(n); });
+$('body').addEventListener('keydown', e=>{
+  const n = e.target.closest('.note.more');
+  if (n && (e.key==="Enter" || e.key===" ")) { e.preventDefault(); toggleNote(n); }
+});
 
 // Freeze the first two visible columns, unless together they'd take more than half
 // of the table's visible width (as on a phone), where freezing would leave no room to scroll.
@@ -302,7 +327,7 @@ function updateFreeze(){
   table.style.setProperty('--c1-left', w0 + "px");
   table.classList.toggle('frozen', w0 + w1 <= wrap.clientWidth / 2);
 }
-window.addEventListener('resize', updateFreeze);
+window.addEventListener('resize', ()=>{ updateFreeze(); markNotes(); });
 
 function renderColPanel(){
   const list = $('collist'); list.innerHTML = "";
@@ -374,7 +399,7 @@ function setFiltersOpen(open, remember){
   $('sidebar').hidden = !open;
   document.querySelector('main').classList.toggle('nofilters', !open);
   $('filterbtn').setAttribute('aria-expanded', String(open));
-  labelFilterBtn(); updateFreeze();
+  labelFilterBtn(); updateFreeze(); markNotes();
   if (remember) try { localStorage.setItem(FILTERS_KEY, open ? "open" : "closed"); } catch(e) {}
 }
 function labelFilterBtn(){

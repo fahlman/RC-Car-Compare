@@ -20,6 +20,17 @@
   h1 { margin:0 0 4px; font-size: 22px; letter-spacing:-.01em; }
   header p { margin:0; color:var(--muted); }
   main { padding: 12px 24px 40px; }
+  .content { min-width:0; }
+  /* On wider screens the filters sit in a left sidebar that stays in view and scrolls on its own. */
+  @media (min-width: 761px) {
+    main { display:grid; grid-template-columns: 250px minmax(0,1fr); gap:18px; align-items:start; }
+    .panel.sidebar { position:sticky; top:12px; max-height:calc(100vh - 24px); max-height:calc(100dvh - 24px); overflow:auto; margin-bottom:0; }
+    .sidebar .filters { flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:16px; }
+    .sidebar .chips { flex-direction:column; gap:1px; }
+    .sidebar .chips button { border-color:transparent; border-radius:6px; padding:3px 6px; text-align:left; }
+    .sidebar .chips button:hover { background:var(--accent-soft); }
+    .sidebar input[type=number] { width:100%; box-sizing:border-box; }
+  }
   .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px; }
   .filters { display:flex; flex-wrap:wrap; gap:14px 22px; align-items:flex-end; }
   .f { display:flex; flex-direction:column; gap:5px; font-size:13px; }
@@ -39,7 +50,7 @@
     font: inherit; padding:6px 8px; border:1px solid var(--line); border-radius:7px; background:var(--panel); color:var(--ink);
   }
   input[type=number] { width: 110px; }
-  input[type=search] { width: 200px; }
+  input[type=search] { width: 240px; max-width:100%; box-sizing:border-box; }
   button { font: inherit; padding:6px 12px; border-radius:7px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; }
   button:hover { border-color: var(--accent); }
   .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 4px 0 10px; }
@@ -91,21 +102,22 @@
   <p>1/10-scale ready-to-run RC cars and trucks from Arrma, HPI Racing, Kyosho, Losi, Redcat, RLAARLO, Team Associated, Team Corally and Traxxas. Click a filter choice once to show only those cars, again to hide them, and a third time to clear it. Click a header to sort (Shift+click to sort by more than one column), drag headers to reorder, and use <b>Columns</b> to show or hide columns.</p>
 </header>
 <main>
-  <section class="panel">
+  <aside class="panel sidebar" aria-label="Filters">
     <div class="filters" id="filters">
       <div class="f"><span>Brand</span><div class="chips" id="f-brand" role="group" aria-label="Brand"></div></div>
       <div class="f"><span>Drive</span><div class="chips" id="f-drive" role="group" aria-label="Drive"></div></div>
       <div class="f"><span>Motor</span><div class="chips" id="f-motor" role="group" aria-label="Motor"></div></div>
       <div class="f"><span>Runs on</span><div class="chips" id="f-cells" role="group" aria-label="Runs on"></div></div>
       <div class="f"><span>Center diff</span><div class="chips" id="f-center" role="group" aria-label="Center diff"></div></div>
+      <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
       <div class="f"><span>Type</span><div class="chips" id="f-type" role="group" aria-label="Type"></div></div>
       <div class="f"><span>Platform</span><div class="chips" id="f-platform" role="group" aria-label="Platform"></div></div>
-      <div class="f"><span>Max price (USD)</span><input type="number" id="f-price" min="0" step="10" placeholder="No limit"></div>
-      <div class="f"><span>Search</span><input type="search" id="f-q" placeholder="Model, SKU, notes…"></div>
     </div>
-  </section>
+  </aside>
 
+  <div class="content">
   <div class="toolbar">
+    <input type="search" id="f-q" placeholder="Search model, SKU, notes…" aria-label="Search">
     <span class="count" id="count"></span>
     <button id="clear">Clear filters</button>
     <div class="colmenu">
@@ -121,6 +133,7 @@
   <p class="hint" id="amazonnote" hidden>As an Amazon Associate I earn from qualifying purchases. Amazon's price may differ from the maker's price shown here.</p>
   <div class="tablewrap"><table><thead><tr id="headrow"></tr></thead><tbody id="body"></tbody></table></div>
   <p class="hint">“?” means not verified yet. Speeds are the maker's claims and often assume optional gearing. All data comes from the manufacturers' own websites; prices are their regular US list prices on the date shown.</p>
+  </div>
 </main>
 <footer id="footer">
   Data lives in <code>cars.json</code>. Spot an error or a missing model? <span id="contrib">Open a pull request with a source link.</span>
@@ -334,6 +347,7 @@ function setupFilters(){
     });
   });
   $('filters').addEventListener('input', renderBody);
+  $('f-q').addEventListener('input', renderBody);
   $('clear').addEventListener('click', ()=>{ clearFilters(); renderBody(); });
   $('colbtn').addEventListener('click', e=>{ e.stopPropagation(); const p=$('colpanel'); p.classList.toggle('open'); $('colbtn').setAttribute('aria-expanded', p.classList.contains('open')); });
   $('colpanel').addEventListener('click', e=>e.stopPropagation());
